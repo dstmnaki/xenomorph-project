@@ -1100,6 +1100,7 @@ if(first()){
                 #Anim["currentFrame",number]=4
                 switch(Anim["currentFrame",number]){
                     case 1,
+                        Base:propFreeze(1)
                         Anim["frameSpeed",number]=1/2
                         Anim["nextRootPos",vector]=BaseRanger:pos()
                         Anim["nextRootAng",angle]=ang(0,holoEntity(Bones["Root",number]):angles():yaw(),0)
@@ -1968,7 +1969,7 @@ if(clk("int")){
     
     Moving=W|S|A|D
     MovingVal+=(Moving-!Moving)/5
-    MovingVal=clamp(MovingVal,FinishStep,1)
+    MovingVal=clamp(MovingVal,FinishStep,1)*(1-Anim["isPlaying",number])
     
     ShiftVal+=((Shift&Moving)-!(Shift&Moving))/7
     ShiftVal=clamp(ShiftVal,0,1*(Base:vel():length()>25))

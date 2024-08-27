@@ -1096,7 +1096,7 @@ if(first()){
             break
             case "anim_headbite_01",
                 Anim["frames",number]=7
-                Anim["frameSpeed",number]=1/3
+                Anim["frameSpeed",number]=1/2
                 #Anim["currentFrame",number]=4
                 switch(Anim["currentFrame",number]){
                     case 1,
@@ -1133,8 +1133,8 @@ if(first()){
                         
                         Anim["tailUp",number]=0
                         
-                        Anim["nextVictimPos",vector]=BaseRanger:pos()+vec(50,0,0):rotateAroundAxis(vec(0,0,1),holoEntity(Bones["Root",number]):angles():yaw())
-                        Anim["nextVictimAng",angle]=ang(0,holoEntity(Bones["Root",number]):angles():yaw()+15,0)
+                        Anim["nextVictimPos",vector]=Anim["lastVictimPos",vector]=BaseRanger:pos()+vec(50,0,0):rotateAroundAxis(vec(0,0,1),holoEntity(Bones["Root",number]):angles():yaw())
+                        Anim["nextVictimAng",angle]=Anim["lastVictimAng",angle]=ang(0,holoEntity(Bones["Root",number]):angles():yaw()+15,0)
                         Anim["nextGrabVictim",number]=0
                     break
                     case 2,

@@ -1327,6 +1327,8 @@ if(first()){
                         Anim["nextVictimAng",angle]=ang(0,holoEntity(Bones["Root",number]):angles():yaw()+180,0)
                         Anim["nextGrabVictim",number]=2
                         VictimPod:killPod()
+                        holoEntity(Bones["InnerJaw",number]):soundPlay("flesh_tear",0,"physics/body/body_medium_break3.wav")
+                        holoEntity(Bones["InnerJaw",number]):soundPlay("skull_break",0,"physics/body/body_medium_break4.wav")
                     break
                     case 7,
                         Anim["frameSpeed",number]=1/3

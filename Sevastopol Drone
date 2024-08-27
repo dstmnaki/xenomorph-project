@@ -107,6 +107,10 @@ if(first()){
     I++, HN++, HT[HN,array] = array(I, Bones["Neck",number], noentity(), 0, vec(4.6,0,4.3), ang(0, 0, 0), BoneScale*ShowBones, BoneMdl),Bones["Head",number]=I
     
     I++, HN++, HT[HN,array] = array(I, Bones["Head",number], noentity(), 0, vec(5,0,-4.5), ang(0, 0, 0), BoneScale*ShowBones, BoneMdl),Bones["Jaw",number]=I
+    
+    I++, HN++, HT[HN,array] = array(I, Bones["Head",number], noentity(), 0, vec(6,0,-2.2), ang(25, 0, 0), BoneScale*ShowBones*ShowallBones, BoneMdl),Bones["InnerJawParent",number]=I
+    I++, HN++, HT[HN,array] = array(I, Bones["InnerJawParent",number], noentity(), 0, vec(0,0,0), ang(0, 0, 0), BoneScale*ShowBones, BoneMdl),Bones["InnerJaw",number]=I
+    
     I++, HN++, HT[HN,array] = array(I, Bones["Jaw",number], noentity(), 0, vec(4.5,0,0.3), ang(0, 0, 0), BoneScale*ShowBones*ShowallBones, BoneMdl),Bones["DroolParent",number]=I
     
     I++, HN++, HT[HN,array] = array(I, Bones["Pelvis",number], noentity(), 0, vec(-6.5,0,-0.5), ang(-40-180,0,0), BoneScale*ShowBones, BoneMdl),Bones["TailParent",number]=I
@@ -338,6 +342,58 @@ if(first()){
     I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(-0.7, 0.5, -1)*1.2, ang(-23.5, 0, 0), vec(0.05, 0.05, 0.3)*1.2, "models/pac/default.mdl", "Skin", vec4(255, 255, 255, 255), 0)
     
     
+    local Parent = Bones["Hand_Right",number]
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(3.2561, 0.1665, 0.3054), ang(-12.6, 7, 6), vec(0.39, 0.33, 0.15), "models/pac/default.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(6.7432, 4.0304, -2.3939), ang(50.9812, -6.9744, -76.7391), vec(0.0252, 0.0227, 0.021), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(9.2434, -0.9976, -2.6502), ang(70.9789, 26.4282, 43.5331), vec(0.0257, 0.0392, 0.027), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(11.2866, 1.832, -3.3417), ang(62.4207, 1.076, -14.1938), vec(0.026, 0.0305, 0.015), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(1.4, 0, 0), ang(0, 0, 0), vec(0.3, 0.27, 0.13), "models/pac/default.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(7.1218, -3.2792, -3.0591), ang(81.3129, 51.793, 94.2714), vec(0.0221, 0.0211, 0.0195), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(9.5969, -0.6742, -4.4144), ang(76.6093, 59.8859, 75.7684), vec(0.02, 0.0269, 0.021), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(7.1265, 1.3129, 0.877), ang(19.2577, 11.424, -6.9066), vec(0.0335, 0.05, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(9.7768, 1.742, -0.9722), ang(53.4041, 4.8602, -10.9773), vec(0.0335, 0.037, 0.0205), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(7.116, -1.0096, -0.1308), ang(30.214, -7.7922, 15.0565), vec(0.04, 0.05, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(4.839, 3.6136, -0.3654), ang(38.9462, 27.3419, -51.9908), vec(0.0335, 0.0325, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(5.9037, -2.62, -0.8424), ang(38.0833, -35.6709, 11.0318), vec(0.0285, 0.0325, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+    
+    
+    local Parent = Bones["Hand_Left",number]
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(3.2561, -0.1665, 0.3054), ang(-12.6, -7, -6), vec(0.39, 0.33, 0.15), "models/pac/default.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(6.7432, -4.0304, -2.3939), ang(50.9812, 6.9744, 76.7391), vec(0.0252, 0.0227, 0.021), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(9.2434, 0.9976, -2.6502), ang(70.9789, -26.4282, -43.5331), vec(0.0257, 0.0392, 0.027), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(11.2866, -1.832, -3.3417), ang(62.4207, -1.076, 14.1938), vec(0.026, 0.0305, 0.015), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(1.4, 0, 0), ang(0, 0, 0), vec(0.3, 0.27, 0.13), "models/pac/default.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(7.1218, 3.2792, -3.0591), ang(81.3129, -51.793, -94.2714), vec(0.0221, 0.0211, 0.0195), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(9.5969, 0.6742, -4.4144), ang(76.6093, -59.8859, -75.7684), vec(0.02, 0.0269, 0.021), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(7.1265, -1.3129, 0.877), ang(19.2577, -11.424, 6.9066), vec(0.0335, 0.05, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(9.7768, -1.742, -0.9722), ang(53.4041, -4.8602, 10.9773), vec(0.0335, 0.037, 0.0205), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(7.116, 1.0096, -0.1308), ang(30.214, 7.7922, -15.0565), vec(0.04, 0.05, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(4.839, -3.6136, -0.3654), ang(38.9462, -27.3419, 51.9908), vec(0.0335, 0.0325, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+	
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(5.9037, 2.62, -0.8424), ang(38.0833, 35.6709, -11.0318), vec(0.0285, 0.0325, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+    
+    
     local Parent = Bones["Head",number]
     I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(-0.1, 0, -1.25), ang(0, 0, 0), vec(0, 0, 0), "models/pac/default.mdl", "", vec4(255, 255, 255, 255), 0),Parent=I
 	
@@ -457,57 +513,18 @@ if(first()){
 	
     I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(4.43, 1.4, 0.22), ang(-4.398, 142, 176.6), vec(0.0101, 0.0068, 0.05), "models/hunter/misc/cone1x05.mdl", "models/props_building_details/courtyard_template001c_bars", vec4(255, 255, 255, 255), 0)
     
-    local Parent = Bones["Hand_Right",number]
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(3.2561, 0.1665, 0.3054), ang(-12.6, 7, 6), vec(0.39, 0.33, 0.15), "models/pac/default.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+    local Parent = Bones["InnerJaw",number]
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(-3.5, 0, 0), ang(-90, 0, 0), vec(0.2475, 0.33, 1.65), "models/props_junk/garbage_metalcan001a.mdl", "models/XQM/Rails/gumball_1", vec4(96, 96, 68, 255), 0)
 	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(6.7432, 4.0304, -2.3939), ang(50.9812, -6.9744, -76.7391), vec(0.0252, 0.0227, 0.021), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(2.385, -0.4, 0.4062), ang(30.9253, 151.7952, 162.9378), vec(0.0072, 0.009, 0.0198), "models/hunter/misc/cone1x05.mdl", "models/props_c17/metalladder003", vec4(255, 255, 255, 255), 0)
 	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(9.2434, -0.9976, -2.6502), ang(70.9789, 26.4282, 43.5331), vec(0.0257, 0.0392, 0.027), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(2.385, 0.4, -0.406), ang(149.075, -151.795, -162.938), vec(0.0072, 0.009, 0.0198), "models/hunter/misc/cone1x05.mdl", "models/props_c17/metalladder003", vec4(255, 255, 255, 255), 0)
 	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(11.2866, 1.832, -3.3417), ang(62.4207, 1.076, -14.1938), vec(0.026, 0.0305, 0.015), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(2.385, -0.4, -0.406), ang(149.075, 151.795, 162.938), vec(0.0072, 0.009, 0.0198), "models/hunter/misc/cone1x05.mdl", "models/props_c17/metalladder003", vec4(255, 255, 255, 255), 0)
 	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(1.4, 0, 0), ang(0, 0, 0), vec(0.3, 0.27, 0.13), "models/pac/default.mdl", "Skin", vec4(255, 255, 255, 255), 0)
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(2.49, 0, 0), ang(-90, 0, 0), vec(0.0234, 0.0288, 0.3078), "models/hunter/misc/cone1x05.mdl", "models/XQM/Rails/gumball_1", vec4(81, 77, 64, 255), 0)
 	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(7.1218, -3.2792, -3.0591), ang(81.3129, 51.793, 94.2714), vec(0.0221, 0.0211, 0.0195), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(9.5969, -0.6742, -4.4144), ang(76.6093, 59.8859, 75.7684), vec(0.02, 0.0269, 0.021), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(7.1265, 1.3129, 0.877), ang(19.2577, 11.424, -6.9066), vec(0.0335, 0.05, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(9.7768, 1.742, -0.9722), ang(53.4041, 4.8602, -10.9773), vec(0.0335, 0.037, 0.0205), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(7.116, -1.0096, -0.1308), ang(30.214, -7.7922, 15.0565), vec(0.04, 0.05, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(4.839, 3.6136, -0.3654), ang(38.9462, 27.3419, -51.9908), vec(0.0335, 0.0325, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(5.9037, -2.62, -0.8424), ang(38.0833, -35.6709, 11.0318), vec(0.0285, 0.0325, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-    
-    
-    local Parent = Bones["Hand_Left",number]
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(3.2561, -0.1665, 0.3054), ang(-12.6, -7, -6), vec(0.39, 0.33, 0.15), "models/pac/default.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(6.7432, -4.0304, -2.3939), ang(50.9812, 6.9744, 76.7391), vec(0.0252, 0.0227, 0.021), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(9.2434, 0.9976, -2.6502), ang(70.9789, -26.4282, -43.5331), vec(0.0257, 0.0392, 0.027), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(11.2866, -1.832, -3.3417), ang(62.4207, -1.076, 14.1938), vec(0.026, 0.0305, 0.015), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(1.4, 0, 0), ang(0, 0, 0), vec(0.3, 0.27, 0.13), "models/pac/default.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(7.1218, 3.2792, -3.0591), ang(81.3129, -51.793, -94.2714), vec(0.0221, 0.0211, 0.0195), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(9.5969, 0.6742, -4.4144), ang(76.6093, -59.8859, -75.7684), vec(0.02, 0.0269, 0.021), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(7.1265, -1.3129, 0.877), ang(19.2577, -11.424, 6.9066), vec(0.0335, 0.05, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(9.7768, -1.742, -0.9722), ang(53.4041, -4.8602, 10.9773), vec(0.0335, 0.037, 0.0205), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(7.116, 1.0096, -0.1308), ang(30.214, 7.7922, -15.0565), vec(0.04, 0.05, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(4.839, -3.6136, -0.3654), ang(38.9462, -27.3419, 51.9908), vec(0.0335, 0.0325, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-	
-    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(5.9037, 2.62, -0.8424), ang(38.0833, 35.6709, -11.0318), vec(0.0285, 0.0325, 0.03), "models/props_combine/headcrabcannister01a.mdl", "Skin", vec4(255, 255, 255, 255), 0)
-    
+    I++, HN++, HT[HN,array] = array(I, Parent, noentity(), 0, vec(2.385, 0.4, 0.4062), ang(30.9253, -151.795, -162.938), vec(0.0072, 0.009, 0.0198), "models/hunter/misc/cone1x05.mdl", "models/props_c17/metalladder003", vec4(255, 255, 255, 255), 0)
     
     for(I3=2,Config["TailSegmentCount",number]){
         local Parent = Bones["Tail_"+(I3-1),number]
@@ -1432,6 +1449,8 @@ if(first()){
                 
                 Anim["lastJawOpen",angle]=Anim["nextJawOpen",angle]
                 
+                Anim["lastInnerJawOut",number]=Anim["nextInnerJawOut",number]
+                
                 Anim["lastGrabVictim",number]=Anim["nextGrabVictim",number]
                 
                 Anim["lastLeftHandPos",vector]=Anim["nextLeftHandPos",vector]
@@ -1487,6 +1506,8 @@ if(first()){
             holoPos(Bones["VictimPod",number],mix(vec(4,0,-65):rotateAroundAxis(vec(0,0,1),holoEntity(Bones["Root",number]):angles():yaw())+mix(LeftPos,RightPos,0.5),mix(Anim["nextVictimPos",vector],Anim["lastVictimPos",vector],Anim["frameTime",number]),clamp(Anim["nextGrabVictim",number],0,1)))
             
             holoAng(Bones["VictimPod",number],slerp(quat(Anim["nextVictimAng",angle]),quat(Anim["lastVictimAng",angle]),1-Anim["frameTime",number]):toAngle())
+            
+            holoPos(Bones["InnerJaw",number],holoEntity(Bones["InnerJaw",number]):parent():toWorld(vec(6*mix(vec(Anim["nextInnerJawOut",number]),vec(Anim["lastInnerJawOut",number]),Anim["frameTime",number]):x(),0,0)))
             
             FrameData=table("currentFrame"=Anim["currentFrame",number],"currentFrame"=Anim["currentFrame",number])
             

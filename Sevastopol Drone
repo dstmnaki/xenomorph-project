@@ -759,9 +759,9 @@ if(first()){
     }
     function void snatch(){
         findSetResults(players())
-        findSortByDistance(holoEntity(Bones["Pelvis",number]):toWorld(vec(20,0,0)))
+        findSortByDistance(holoEntity(Bones["Pelvis",number]):toWorld(vec(25,0,0)))
         Victim=findToArray()[1,entity]==PLY ? findToArray()[2,entity] : findToArray()[1,entity]
-        if(Victim:pos():distance(holoEntity(Bones["Root",number]):toWorld(vec(20,0,0)))<50){
+        if(Victim:pos():distance(holoEntity(Bones["Root",number]):toWorld(vec(25,0,0)))<55){
             Victim:plyEnterVehicle(VictimPod)
         }
         Anim["snatchReturn",number]=VictimPod:driver():isValid()
@@ -1100,7 +1100,6 @@ if(first()){
                 #Anim["currentFrame",number]=4
                 switch(Anim["currentFrame",number]){
                     case 1,
-                        Base:propFreeze(1)
                         Anim["frameSpeed",number]=1/2
                         Anim["nextRootPos",vector]=BaseRanger:pos()
                         Anim["nextRootAng",angle]=ang(0,holoEntity(Bones["Root",number]):angles():yaw(),0)
@@ -1134,14 +1133,11 @@ if(first()){
                         
                         Anim["tailUp",number]=0
                         
-                        Anim["nextVictimPos",vector]=BaseRanger:pos()+vec(51,-1,-4):rotateAroundAxis(vec(0,0,1),holoEntity(Bones["Root",number]):angles():yaw())
-                        Anim["nextVictimAng",angle]=ang(0,holoEntity(Bones["Root",number]):angles():yaw()+180,0)
+                        Anim["nextVictimPos",vector]=BaseRanger:pos()+vec(50,0,0):rotateAroundAxis(vec(0,0,1),holoEntity(Bones["Root",number]):angles():yaw())
+                        Anim["nextVictimAng",angle]=ang(0,holoEntity(Bones["Root",number]):angles():yaw()+15,0)
                         Anim["nextGrabVictim",number]=0
                     break
                     case 2,
-                        if(Anim["snatchReturn",number]==0){
-                            Anim["currentFrame",number]=7
-                        }
                         Anim["frameSpeed",number]=1/3
                         Anim["nextRootPos",vector]=BaseRanger:pos()
                         Anim["nextRootAng",angle]=ang(0,holoEntity(Bones["Root",number]):angles():yaw(),0)
@@ -1218,7 +1214,7 @@ if(first()){
                         Anim["nextGrabVictim",number]=1
                     break
                     case 4,
-                        Anim["frameSpeed",number]=1/5
+                        Anim["frameSpeed",number]=1/8
                         Anim["nextRootPos",vector]=BaseRanger:pos()
                         Anim["nextRootAng",angle]=ang(0,holoEntity(Bones["Root",number]):angles():yaw(),0)
                         
@@ -1294,7 +1290,7 @@ if(first()){
                         Anim["nextGrabVictim",number]=2
                     break
                     case 6,
-                        Anim["frameSpeed",number]=1/3
+                        Anim["frameSpeed",number]=1/2
                         Anim["nextRootPos",vector]=BaseRanger:pos()
                         Anim["nextRootAng",angle]=ang(0,holoEntity(Bones["Root",number]):angles():yaw(),0)
                         
@@ -1511,6 +1507,8 @@ if(first()){
             
             FrameData=table("currentFrame"=Anim["currentFrame",number],"currentFrame"=Anim["currentFrame",number])
             
+            VictimPod:driver():plySetAng(ang(-25,0,0))
+            
             if((Anim["currentFrame",number]>Anim["frames",number])&(Anim["frames",number]>0)){
                 Anim["isPlaying",number]=0
                 Anim["currentFrame",number]=1
@@ -1564,13 +1562,15 @@ if(first()){
     function void attack(IsHeavyAttack){
         if(CurrentStance=="upright"){
             if(!IsHeavyAttack){
-                storeLastPose()
-                Anim["animName",string]="anim_headbite_01"
-                Anim["currentFrame",number]=1
-                Anim["isPlaying",number]=1
-                CurrentStance="upright"
-                animationUpdateData()
                 snatch()
+                if(Anim["snatchReturn",number]){
+                    storeLastPose()
+                    Anim["animName",string]="anim_headbite_01"
+                    Anim["currentFrame",number]=1
+                    Anim["isPlaying",number]=1
+                    CurrentStance="upright"
+                    animationUpdateData()
+                }
             }
         }else{
             if(IsHeavyAttack){

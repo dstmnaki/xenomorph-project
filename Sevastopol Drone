@@ -698,7 +698,7 @@ if(first()){
         local AxisWorld = Target - holoEntity(NHipA):pos()
         local AxisLocal = Base:toLocalAxis(AxisWorld)
 
-        holoAng(NHipA, Base:toWorld(ang(0, 0, atan(AxisLocal:z(), AxisLocal:y()) + 90)))
+        holoAng(NHipA, Base:toWorld(ang(ShoulderAng:pitch(), ShoulderAng:yaw(), atan(AxisLocal:z(), AxisLocal:y()) + 90)))
 
         local AxisLocal = holoEntity(NHipA):toLocalAxis(Target - holoEntity(NHipB):pos())
         local Distance = min(AxisLocal:length(), LengthA + LengthB)
@@ -706,7 +706,26 @@ if(first()){
         #holoAng(NHipB, holoEntity(NHipA):toWorld(ang(atan(-AxisLocal:x(), AxisLocal:z()) + icos(Distance, LengthA, LengthB), 180, 0))) #-- forward knee   
         holoAng(NHipB, holoEntity(NHipA):toWorld(ang(atan(AxisLocal:x(), AxisLocal:z()) + icos(Distance, LengthA, LengthB), 0, 0))) #-- reverse knee
         holoAng(NKnee, holoEntity(NHipB):toWorld(ang(icos(LengthB, LengthA, Distance) + 180, 0, 0)))
-        holoAng(NFoot, Base:angles())
+        holoAng(NFoot, HandAng)
+    }
+    function quat_ik(LeftRight, Target:vector, HandAng:angle, ShoulderAng:angle) {
+        local Base=holoEntity(Bones["HandParent",number])
+        local NHip=Bones[LeftRight ? "UpperArm_Left" : "UpperArm_Right",number]
+        local NKnee=Bones[LeftRight ? "ForeArm_Left" : "ForeArm_Right",number]
+        local NFoot=Bones[LeftRight ? "Hand_Left" : "Hand_Right",number]
+        
+        local Origin = holoEntity(NHip):pos()
+        local AxisLocal = Base:toLocalAxis(Target - Origin)
+
+        #local AxisAngle = AxisLocal:toAngle():setRoll(-bearing(Target, Base:angles(), Origin)) #-- forward knee
+        local AxisAngle = AxisLocal:toAngle():setRoll(-bearing(Origin, Base:angles()+ShoulderAng, Target)) #-- reverse knee
+
+        local LengthC_Arm = min(AxisLocal:length(), LengthA_Arm + LengthB_Arm)
+        local AxisQuat = quat(AxisAngle) * qRotation(vec(0, 1, 0), 90 + icos(LengthC_Arm, LengthA_Arm, LengthB_Arm))
+        
+        holoAng(NHip, Base:toWorld(AxisQuat:toAngle()))
+        holoAng(NKnee, holoEntity(NHip):toWorld(ang(icos(LengthB_Arm, LengthA_Arm, LengthC_Arm) + 180, 0, 0)))
+        holoAng(NFoot, HandAng)
     }
     function ranger entity:recRanger(Length, Position:vector, Iteration, Iterations, Pitch, Yaw, Increase){
         local Result = rangerOffset(Length, Position, This:toWorld(ang(Pitch ^ Increase, Yaw,0)):forward())
@@ -1496,9 +1515,9 @@ if(first()){
             
             local LeftPos=holoEntity(Bones["Spine",number]):toWorld(mix(Anim["nextLeftHandPos",vector],Anim["lastLeftHandPos",vector],Anim["frameTime",number]))
             local RightPos=holoEntity(Bones["Spine",number]):toWorld(mix(Anim["nextRightHandPos",vector],Anim["lastRightHandPos",vector],Anim["frameTime",number]))
-            two_seg_ik(1, LeftPos, holoEntity(Bones["Spine",number]):toWorld(slerp(quat(Anim["nextLeftHandAng",angle]),quat(Anim["lastLeftHandAng",angle]),1-Anim["frameTime",number]):toAngle()), ang(15,-25,-25))
+            quat_ik(1, LeftPos, holoEntity(Bones["Spine",number]):toWorld(slerp(quat(Anim["nextLeftHandAng",angle]),quat(Anim["lastLeftHandAng",angle]),1-Anim["frameTime",number]):toAngle()), ang(15,-25,-25))
             
-            two_seg_ik(0, RightPos, holoEntity(Bones["Spine",number]):toWorld(slerp(quat(Anim["nextRightHandAng",angle]),quat(Anim["lastRightHandAng",angle]),1-Anim["frameTime",number]):toAngle()), ang(15,25,25))
+            quat_ik(0, RightPos, holoEntity(Bones["Spine",number]):toWorld(slerp(quat(Anim["nextRightHandAng",angle]),quat(Anim["lastRightHandAng",angle]),1-Anim["frameTime",number]):toAngle()), ang(15,25,25))
             
             digi_ik(1, mix(Anim["nextLeftFootPos",vector],Anim["lastLeftFootPos",vector],Anim["frameTime",number]), -10, slerp(quat(Anim["nextLeftFootAng",angle]),quat(Anim["lastLeftFootAng",angle]),1-Anim["frameTime",number]):toAngle())
             
@@ -1568,14 +1587,16 @@ if(first()){
         if(CurrentStance=="upright"){
             if(!IsHeavyAttack){
                 snatch()
-                if(Anim["snatchReturn",number]){
+                #Victim=owner()
+                #owner():plyEnterVehicle(VictimPod)
+                #if(Anim["snatchReturn",number]){
                     storeLastPose()
                     Anim["animName",string]="anim_headbite_01"
                     Anim["currentFrame",number]=1
                     Anim["isPlaying",number]=1
                     CurrentStance="upright"
                     animationUpdateData()
-                }
+                #}
             }
         }else{
             if(IsHeavyAttack){

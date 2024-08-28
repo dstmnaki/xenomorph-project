@@ -8,8 +8,9 @@ The xeno itself does not support duping but the vents do, so you can make a map 
 Controls
 WASD - Move
 Shift - Run
-Space - Vent (while near one)
-Control - Change stance
-Alt - Toggle third person
+Space - Vent (while near one), Jump (while not near a vent)
+Control - Toggle crawling
+Alt - Toggle stalking stance
+V - Toggle third person
 Mouse1 - Headbite (while in normal upright mode, tail down on the ground)
-Mouse2 - Look around (in third person while in normal upright mode)
+1 - Toggle aim lock

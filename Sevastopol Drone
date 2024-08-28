@@ -2036,7 +2036,7 @@ if(clk("int")){
     MovingVal+=(Moving-!Moving)/5
     MovingVal=clamp(MovingVal,FinishStep,1)*(1-Anim["isPlaying",number])
     
-    ShiftVal+=((Shift&Moving)-!(Shift&Moving))/15
+    ShiftVal+=((Shift&Moving)-!(Shift&Moving))/(5+5*(CurrentStance=="onAllFours"))
     ShiftVal=clamp(ShiftVal,0,1*(Base:vel():length()>25))
     ShiftVal=clamp(ShiftVal-MoveS-max(MoveA,MoveD)*0.25,0,1)
     

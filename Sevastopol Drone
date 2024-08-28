@@ -1587,16 +1587,14 @@ if(first()){
         if(CurrentStance=="upright"){
             if(!IsHeavyAttack){
                 snatch()
-                #Victim=owner()
-                #owner():plyEnterVehicle(VictimPod)
-                #if(Anim["snatchReturn",number]){
+                if(Anim["snatchReturn",number]){
                     storeLastPose()
                     Anim["animName",string]="anim_headbite_01"
                     Anim["currentFrame",number]=1
                     Anim["isPlaying",number]=1
                     CurrentStance="upright"
                     animationUpdateData()
-                #}
+                }
             }
         }else{
             if(IsHeavyAttack){

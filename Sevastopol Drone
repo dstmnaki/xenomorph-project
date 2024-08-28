@@ -1957,7 +1957,7 @@ event tick(){
             VentData:removeEntity("entity")
         }
         OnWall=max(clamp(-15+abs(Base:angles():roll()/25),0,1),clamp(-15+abs(Base:angles():pitch()/25),0,1))
-        CanGoOnWalls=(CurrentStance=="onAllFours"&!(ShiftVal>=0.5))
+        CanGoOnWalls=(CurrentStance=="onAllFours")
         if(curtime()-Delays["moveDelta",number]>0.05){
             MovementDelta=1+(curtime()-Delays["moveDelta",number])
             WallAnglePitch=-90*clamp(1-rangerOffsetHull(250+Base:velL():x()*0.1,Base:pos(),Base:forward(),vec(5,5,5)):distance()*0.01,0,1)

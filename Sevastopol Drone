@@ -47,7 +47,7 @@ if(first()){
     
     Config["TailSegmentCount",number]=16
     
-    CurrentStance = select(3,"upright","stalking","onAllFours")
+    CurrentStance = select(1,"upright","stalking","onAllFours")
     
     LengthA=18
     LengthB=18

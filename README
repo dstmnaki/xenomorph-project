@@ -6,6 +6,7 @@ Currently contains only the Sevastopol Drone variant but more are planned when i
 The xeno itself does not support duping but the vents do, so you can make a map out of props and have them be part of it
 
 Controls
+M - Enter the seat
 WASD - Move
 Shift - Run
 Space - Vent (while near one), Jump (while not near a vent)

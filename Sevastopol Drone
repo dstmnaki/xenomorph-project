@@ -698,7 +698,7 @@ if(first()){
         local AxisWorld = Target - holoEntity(NHipA):pos()
         local AxisLocal = Base:toLocalAxis(AxisWorld)
 
-        holoAng(NHipA, Base:toWorld(ang(ShoulderAng:pitch(), ShoulderAng:yaw(), atan(AxisLocal:z(), AxisLocal:y()) + 90)))
+        holoAng(NHipA, Base:toWorld(ang(0, 0, atan(AxisLocal:z(), AxisLocal:y()) + 90)))
 
         local AxisLocal = holoEntity(NHipA):toLocalAxis(Target - holoEntity(NHipB):pos())
         local Distance = min(AxisLocal:length(), LengthA + LengthB)

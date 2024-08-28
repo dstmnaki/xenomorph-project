@@ -1,6 +1,6 @@
 @name Xenomorph Revamp Project - Sevastopol Drone
 @model models/hunter/misc/sphere075x075.mdl
-@persist [Base Seat VictimPod PLY]:entity [Config Delays HT CT Bones WallData TailPoints Next Last StepSins Anim VentData]:table Height EyeAngYaw Size [LengthA LengthB LengthC] [LengthA_Arm LengthB_Arm] Step FinishStep StepTime Moving BaseRanger:ranger TargetHeight TimeDelta Jumping HasLanded [Dir Dir2 Vel]:vector HeightVal SpeedMult DriverTargets:array [SpawnStatus CoreStatus CoreState CurrentStance]:string IsOnGround [HN CN I SpawnCounter] Ready MoveW MoveS MoveA MoveD ShiftVal EyeAng:angle MovingVal AimMix
+@persist [Base Seat VictimPod PLY]:entity [Config Delays HT CT Bones WallData TailPoints Next Last StepSins Anim VentData]:table OnWall Height EyeAngYaw Size [LengthA LengthB LengthC] [LengthA_Arm LengthB_Arm] Step FinishStep StepTime Moving BaseRanger:ranger TargetHeight TimeDelta Jumping HasLanded [Dir Dir2 Vel]:vector HeightVal SpeedMult DriverTargets:array [SpawnStatus CoreStatus CoreState CurrentStance]:string IsOnGround [HN CN I SpawnCounter] Ready MoveW MoveS MoveA MoveD ShiftVal EyeAng:angle MovingVal AimMix
 @trigger none
 @outputs [FrameData]:table
 if(dupefinished()){reset()}
@@ -26,7 +26,7 @@ if(first()){
     VictimPod:propNotSolid(1)
     VictimPod:propDraw(0)
     
-    #rangerHitEntities(0)
+    rangerHitEntities(0)
     
     rangerFilter(array(Seat,Base,VictimPod))
     rangerPersist(1)
@@ -35,7 +35,7 @@ if(first()){
     Size=1.3
     
     Config=table()
-    Config["onAll4sSpeeds",vector2]=vec2(70, 225)*Size
+    Config["onAll4sSpeeds",vector2]=vec2(40, 225)*Size
     Config["upRightSpeeds",vector2]=vec2(45, 225)*Size
     Config["stalkingSpeeds",vector2]=vec2(115, 225)*Size
     Config["jumpForce",number]=1000
@@ -47,7 +47,7 @@ if(first()){
     
     Config["TailSegmentCount",number]=16
     
-    CurrentStance = select(1,"upright","stalking","onAllFours")
+    CurrentStance = select(3,"upright","stalking","onAllFours")
     
     LengthA=18
     LengthB=18
@@ -92,12 +92,13 @@ if(first()){
     I++, HN++, HT[HN,array] = array(I, Bones["Pelvis",number], noentity(), 0, vec(0, 0, 13), ang(0, 0, 0), BoneScale*ShowBones, BoneMdl),Bones["Spine",number]=I
     
     
-    I++, HN++, HT[HN,array] = array(I, Bones["Spine",number], noentity(), 0, vec(0,8,0)+vec(-0.4,0,10.5), ang(0, 0, -90), BoneScale*ShowBones, BoneMdl),Bones["UpperArm_Left",number]=I
+    I++, HN++, HT[HN,array] = array(I, Bones["Spine",number], noentity(), 0, vec(0,8,0)+vec(-0.4,0,10.5), ang(0, 0, -90), BoneScale*ShowBones*ShowallBones, BoneMdl),Bones["Shoulder_Left",number]=I
+    I++, HN++, HT[HN,array] = array(I, Bones["Shoulder_Left",number], noentity(), 0, vec(0, 0, 0), ang(0, 0, 0), BoneScale*ShowBones, BoneMdl),Bones["UpperArm_Left",number]=I
     I++, HN++, HT[HN,array] = array(I, Bones["UpperArm_Left",number], noentity(), 0, vec(0, 0, LengthA_Arm), ang(0, 0, 0), BoneScale*ShowBones, BoneMdl),Bones["ForeArm_Left",number]=I
     I++, HN++, HT[HN,array] = array(I, Bones["ForeArm_Left",number], noentity(), 0, vec(0, 0, LengthB_Arm), ang(0, 0, 0), BoneScale*ShowBones, BoneMdl),Bones["Hand_Left",number]=I
     
-    
-    I++, HN++, HT[HN,array] = array(I, Bones["Spine",number], noentity(), 0, vec(0,-8,0)+vec(-0.4,0,10.5), ang(0, 0, 90), BoneScale*ShowBones, BoneMdl),Bones["UpperArm_Right",number]=I
+    I++, HN++, HT[HN,array] = array(I, Bones["Spine",number], noentity(), 0, vec(0,-8,0)+vec(-0.4,0,10.5), ang(0, 0, 90), BoneScale*ShowBones*ShowallBones, BoneMdl),Bones["Shoulder_Right",number]=I
+    I++, HN++, HT[HN,array] = array(I, Bones["Shoulder_Right",number], noentity(), 0, vec(0, 0, 0), ang(0, 0, 0), BoneScale*ShowBones, BoneMdl),Bones["UpperArm_Right",number]=I
     I++, HN++, HT[HN,array] = array(I, Bones["UpperArm_Right",number], noentity(), 0, vec(0, 0, LengthA_Arm), ang(0, 0, 0), BoneScale*ShowBones, BoneMdl),Bones["ForeArm_Right",number]=I
     I++, HN++, HT[HN,array] = array(I, Bones["ForeArm_Right",number], noentity(), 0, vec(0, 0, LengthB_Arm), ang(0, 0, 0), BoneScale*ShowBones, BoneMdl),Bones["Hand_Right",number]=I
     
@@ -687,24 +688,25 @@ if(first()){
         holoAng(NAnkle, holoEntity(NKnee):toWorld(ang(icos(LengthC, LengthB, Distance) + 180, 0, 0)))
         holoAng(NFoot, slerp(quat(holoEntity(NKnee):toWorld(ang(90+45,0,0))),quat(holoEntity(Bones["LegParent",number]):toWorld(FootAng)),StepTime*(LeftRight ? (1-Step) : (1-!Step))*MovingVal):toAngle())
     }
-    function quat_ik(LeftRight, Target:vector, HandAng:angle, ShoulderAng:angle) {
+    function two_seg_ik(LeftRight, Target:vector, HandAng:angle, ShoulderAng:angle) {
         local Base=holoEntity(Bones["HandParent",number])
-        local NHip=Bones[LeftRight ? "UpperArm_Left" : "UpperArm_Right",number]
+        local NHipA=Bones[LeftRight ? "Shoulder_Left" : "Shoulder_Right",number]
+        local NHipB=Bones[LeftRight ? "UpperArm_Left" : "UpperArm_Right",number]
         local NKnee=Bones[LeftRight ? "ForeArm_Left" : "ForeArm_Right",number]
         local NFoot=Bones[LeftRight ? "Hand_Left" : "Hand_Right",number]
         
-        local Origin = holoEntity(NHip):pos()
-        local AxisLocal = Base:toLocalAxis(Target - Origin)
+        local AxisWorld = Target - holoEntity(NHipA):pos()
+        local AxisLocal = Base:toLocalAxis(AxisWorld)
 
-        #local AxisAngle = AxisLocal:toAngle():setRoll(-bearing(Target, Base:angles(), Origin)) #-- forward knee
-        local AxisAngle = AxisLocal:toAngle():setRoll(-bearing(Origin, Base:angles()+ShoulderAng, Target)) #-- reverse knee
+        holoAng(NHipA, Base:toWorld(ang(0, 0, atan(AxisLocal:z(), AxisLocal:y()) + 90)))
 
-        local LengthC_Arm = min(AxisLocal:length(), LengthA_Arm + LengthB_Arm)
-        local AxisQuat = quat(AxisAngle) * qRotation(vec(0, 1, 0), 90 + icos(LengthC_Arm, LengthA_Arm, LengthB_Arm))
-        
-        holoAng(NHip, Base:toWorld(AxisQuat:toAngle()))
-        holoAng(NKnee, holoEntity(NHip):toWorld(ang(icos(LengthB_Arm, LengthA_Arm, LengthC_Arm) + 180, 0, 0)))
-        holoAng(NFoot, HandAng)
+        local AxisLocal = holoEntity(NHipA):toLocalAxis(Target - holoEntity(NHipB):pos())
+        local Distance = min(AxisLocal:length(), LengthA + LengthB)
+
+        #holoAng(NHipB, holoEntity(NHipA):toWorld(ang(atan(-AxisLocal:x(), AxisLocal:z()) + icos(Distance, LengthA, LengthB), 180, 0))) #-- forward knee   
+        holoAng(NHipB, holoEntity(NHipA):toWorld(ang(atan(AxisLocal:x(), AxisLocal:z()) + icos(Distance, LengthA, LengthB), 0, 0))) #-- reverse knee
+        holoAng(NKnee, holoEntity(NHipB):toWorld(ang(icos(LengthB, LengthA, Distance) + 180, 0, 0)))
+        holoAng(NFoot, Base:angles())
     }
     function ranger entity:recRanger(Length, Position:vector, Iteration, Iterations, Pitch, Yaw, Increase){
         local Result = rangerOffset(Length, Position, This:toWorld(ang(Pitch ^ Increase, Yaw,0)):forward())
@@ -1494,9 +1496,9 @@ if(first()){
             
             local LeftPos=holoEntity(Bones["Spine",number]):toWorld(mix(Anim["nextLeftHandPos",vector],Anim["lastLeftHandPos",vector],Anim["frameTime",number]))
             local RightPos=holoEntity(Bones["Spine",number]):toWorld(mix(Anim["nextRightHandPos",vector],Anim["lastRightHandPos",vector],Anim["frameTime",number]))
-            quat_ik(1, LeftPos, holoEntity(Bones["Spine",number]):toWorld(slerp(quat(Anim["nextLeftHandAng",angle]),quat(Anim["lastLeftHandAng",angle]),1-Anim["frameTime",number]):toAngle()), ang(15,-25,-25))
+            two_seg_ik(1, LeftPos, holoEntity(Bones["Spine",number]):toWorld(slerp(quat(Anim["nextLeftHandAng",angle]),quat(Anim["lastLeftHandAng",angle]),1-Anim["frameTime",number]):toAngle()), ang(15,-25,-25))
             
-            quat_ik(0, RightPos, holoEntity(Bones["Spine",number]):toWorld(slerp(quat(Anim["nextRightHandAng",angle]),quat(Anim["lastRightHandAng",angle]),1-Anim["frameTime",number]):toAngle()), ang(15,25,25))
+            two_seg_ik(0, RightPos, holoEntity(Bones["Spine",number]):toWorld(slerp(quat(Anim["nextRightHandAng",angle]),quat(Anim["lastRightHandAng",angle]),1-Anim["frameTime",number]):toAngle()), ang(15,25,25))
             
             digi_ik(1, mix(Anim["nextLeftFootPos",vector],Anim["lastLeftFootPos",vector],Anim["frameTime",number]), -10, slerp(quat(Anim["nextLeftFootAng",angle]),quat(Anim["lastLeftFootAng",angle]),1-Anim["frameTime",number]):toAngle())
             
@@ -1632,24 +1634,30 @@ function void movementAnimations(){
         switch(CurrentStance){
             case "onAllFours",
                 SpeedSettings = Config["onAll4sSpeeds",vector2]
-                TargetHeight=13+2*MovingVal+6*ShiftVal
+                TargetHeight=13+2*MovingVal+3*ShiftVal
                 
-                PelvisIdleAng=ang(45,0,0)*(1-MovingVal)
-                PelvisWalkAng=ang(85,3*StepSins[1,number]*(Step-!Step),0)*(MovingVal-ShiftVal)
-                PelvisRunningAng=ang(70+8*StepSins[1,number]*(Step-!Step),0,0)*(MovingVal*ShiftVal)
+                PelvisIdleAngGround=ang(45,0,0)*(1-MovingVal)
+                PelvisIdleAngWall=ang(75,0,0)*(1-MovingVal)
+                
+                PelvisIdleAng=slerp(quat(PelvisIdleAngGround),quat(PelvisIdleAngWall),OnWall):toAngle()
+                PelvisWalkAng=ang(85+5*StepSins[1,number],45*StepSins[1,number]*(Step-!Step)+15*(MoveA-MoveD),40*StepSins[1,number]*(Step-!Step))*(MovingVal-ShiftVal)
+                PelvisRunningAng=ang(60+20*StepSins[5,number]*(Step-!Step),45*(MoveA-MoveD),0)*(MovingVal*ShiftVal)
                 
                 PelvisAng=PelvisIdleAng+PelvisWalkAng+PelvisRunningAng+ang(0.5*BreathSin1,0,0)
                 
-                TorsoIdleAng=ang(25,0,0)*(1-MovingVal)
-                TorsoWalkAng=ang(-10,0,3*StepSins[3,number]*(Step-!Step))*(MovingVal-ShiftVal)
-                TorsoRunningAng=ang(30+8*StepSins[3,number]*(Step-!Step),0,0)*(MovingVal*ShiftVal)
+                TorsoIdleAngGround=ang(25,0,0)*(1-MovingVal)
+                TorsoIdleAngWall=ang(5,0,0)*(1-MovingVal)
+                
+                TorsoIdleAng=slerp(quat(TorsoIdleAngGround),quat(TorsoIdleAngWall),OnWall):toAngle()
+                TorsoWalkAng=ang(-10-5*StepSins[2,number],5*StepSins[2,number]*(Step-!Step),15*StepSins[2,number]*(Step-!Step)+10*(MoveA-MoveD))*(MovingVal-ShiftVal)
+                TorsoRunningAng=ang(30-20*StepSins[2,number]*(Step-!Step),0,0)*(MovingVal*ShiftVal)
                 
                 TorsoAng=TorsoIdleAng+TorsoWalkAng+TorsoRunningAng
                 
                 holoAng(Bones["Pelvis",number],holoEntity(Bones["Root",number]):toWorld(PelvisAng))
                 holoAng(Bones["Spine",number],holoEntity(Bones["Spine",number]):parent():toWorld(TorsoAng))
-                holoAng(Bones["Neck",number],holoEntity(Bones["Neck",number]):parent():toWorld(ang(-25+EyeAngLocal:pitch()*0.2,EyeAngLocal:yaw()*0.4,0)))
-                holoAng(Bones["Head",number],holoEntity(Bones["Head",number]):parent():toWorld(ang(-25+EyeAngLocal:pitch()*0.5,EyeAngLocal:yaw()*0.6,0)))
+                holoAng(Bones["Neck",number],holoEntity(Bones["Neck",number]):parent():toWorld(ang(-25+EyeAngLocal:pitch()*0.2-5*StepSins[5,number]*(Step-!Step)*(MovingVal*ShiftVal),EyeAngLocal:yaw()*0.4+5*StepSins[4,number]*(Step-!Step)*(MovingVal-ShiftVal),-5*StepSins[3,number]*(Step-!Step)*(MovingVal-ShiftVal))))
+                holoAng(Bones["Head",number],holoEntity(Bones["Head",number]):parent():toWorld(ang(-25+EyeAngLocal:pitch()*0.5-6*StepSins[5,number]*(Step-!Step)*(MovingVal*ShiftVal),EyeAngLocal:yaw()*0.6+2*StepSins[4,number]*(Step-!Step)*(MovingVal-ShiftVal),-2*StepSins[3,number]*(Step-!Step)*(MovingVal-ShiftVal))))
                 
                 Next["NextLeftArmAng",angle]=ang(0,5-20*MovingVal,0)
                 Next["NextRightArmAng",angle]=ang(0,-5+20*MovingVal,0)
@@ -1712,49 +1720,99 @@ function void movementAnimations(){
             break
         }
         if(CurrentStance=="onAllFours"){
-            Distance=-clamp(Base:vel():length()*2*(curtime()-Delays["animationDelay",number]),0,(LengthA+LengthB+LengthC)*2)/(1+ShiftVal*0.05)
-            
-            holoAng(Bones["LegParent",number],holoEntity(Bones["Root",number]):toWorld(ang(0,0,0)))
-            if(ShiftVal==0){
-                Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(25+25*(MoveW)+15*(ShiftVal),-8-12*MovingVal,65))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*!Step+((1-StepTime)*Step)),-Base:up(),vec(8,8,0))
-                Target = Ranger:pos()+Ranger:hitNormal()*(3+8*sin(StepTime*180)*MovingVal*Step)
+            Distance=-clamp(Base:vel():length()*4.5*(curtime()-Delays["animationDelay",number]),0,(LengthA+LengthB+LengthC)*2)/(1+ShiftVal*0.05)
+            if(IsOnGround){
+                holoAng(Bones["LegParent",number],holoEntity(Bones["Root",number]):toWorld(ang(0,0,0)))
+                holoAng(Bones["HandParent",number],holoEntity(Bones["Root",number]):toWorld(ang(0,0,0)))
+                if(ShiftVal>=0.5){
+                    Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(25+35*MovingVal,-8-7*MovingVal,65))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*!Step+((1-StepTime)*Step)),-Base:up(),vec(8,8,0))
+                    Target = Ranger:pos()+Ranger:hitNormal()*(1+8*sin(StepTime*180)*MovingVal*Step)
+                    HandAng = holoEntity(Bones["Root",number]):toWorld(slerp(quat(Next["LastLeftHandAng",angle]),quat(Next["NextLeftHandAng",angle]),StepTime):toAngle())
+                    ShoulderAng = slerp(quat(Next["LastLeftArmAng",angle]),quat(Next["NextLeftArmAng",angle]),StepTime):toAngle()
+                    
+                    two_seg_ik(0, Target, HandAng, ShoulderAng)
+                    
+                    local Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(25+35*MovingVal,8+7*MovingVal,65))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*!Step+((1-StepTime)*Step)),-Base:up(),vec(8,8,0))
+                    local Target = Ranger:pos()+Ranger:hitNormal()*(1+8*sin(StepTime*180)*MovingVal*Step)
+                    local HandAng = holoEntity(Bones["Root",number]):toWorld(slerp(quat(Next["LastRightHandAng",angle]),quat(Next["NextRightHandAng",angle]),StepTime):toAngle())
+                    local ShoulderAng = slerp(quat(Next["LastRightArmAng",angle]),quat(Next["NextRightArmAng",angle]),StepTime):toAngle()
+                    
+                    two_seg_ik(1, Target, HandAng, ShoulderAng)
+                    
+                    
+                    Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(-20+12*MovingVal,15-6*MovingVal,TargetHeight))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*Step+((1-StepTime)*!Step)),-Base:up(),vec(8,8,0))
+                    Target = Ranger:pos()+Ranger:hitNormal()*(3+8*sin(StepTime*180)*MovingVal*!Step)
+                    LegRotation = 15*(1-MovingVal)
+                    FootAng = ang()
+                    
+                    digi_ik(0, Target, LegRotation, FootAng)
+                    
+                    local Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(-20+12*MovingVal,-15+6*MovingVal,TargetHeight))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*Step+((1-StepTime)*!Step)),-Base:up(),vec(8,8,0))
+                    local Target = Ranger:pos()+Ranger:hitNormal()*(3+8*sin(StepTime*180)*MovingVal*!Step)
+                    local LegRotation = -15*(1-MovingVal)
+                    local FootAng = ang()
+                    
+                    digi_ik(1, Target, LegRotation, FootAng)
+                }else{
+                    Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(25+15*MovingVal,-8-7*MovingVal,65))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*!Step+((1-StepTime)*Step)),-Base:up(),vec(8,8,0))
+                    Target = Ranger:pos()+Ranger:hitNormal()*(1+8*sin(StepTime*180)*MovingVal*Step)
+                    HandAng = holoEntity(Bones["Root",number]):toWorld(slerp(quat(Next["LastLeftHandAng",angle]),quat(Next["NextLeftHandAng",angle]),StepTime):toAngle())
+                    ShoulderAng = slerp(quat(Next["LastLeftArmAng",angle]),quat(Next["NextLeftArmAng",angle]),StepTime):toAngle()
+                    
+                    two_seg_ik(0, Target, HandAng, ShoulderAng)
+                    
+                    local Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(25+15*MovingVal,8+7*MovingVal,65))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*Step+((1-StepTime)*!Step)),-Base:up(),vec(8,8,0))
+                    local Target = Ranger:pos()+Ranger:hitNormal()*(1+8*sin(StepTime*180)*MovingVal*!Step)
+                    local HandAng = holoEntity(Bones["Root",number]):toWorld(slerp(quat(Next["LastRightHandAng",angle]),quat(Next["NextRightHandAng",angle]),StepTime):toAngle())
+                    local ShoulderAng = slerp(quat(Next["LastRightArmAng",angle]),quat(Next["NextRightArmAng",angle]),StepTime):toAngle()
+                    
+                    two_seg_ik(1, Target, HandAng, ShoulderAng)
+                    
+                    
+                    Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(-20-5*MovingVal,15-2*MovingVal,TargetHeight))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*!Step+((1-StepTime)*Step)),-Base:up(),vec(8,8,0))
+                    Target = Ranger:pos()+Ranger:hitNormal()*(3+8*sin(StepTime*180)*MovingVal*Step)
+                    LegRotation = 15*(1-MovingVal)
+                    FootAng = ang()
+                    
+                    digi_ik(0, Target, LegRotation, FootAng)
+                    
+                    local Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(-20-5*MovingVal,-15+2*MovingVal,TargetHeight))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*Step+((1-StepTime)*!Step)),-Base:up(),vec(8,8,0))
+                    local Target = Ranger:pos()+Ranger:hitNormal()*(3+8*sin(StepTime*180)*MovingVal*!Step)
+                    local LegRotation = -15*(1-MovingVal)
+                    local FootAng = ang()
+                    
+                    digi_ik(1, Target, LegRotation, FootAng)
+                }
+            }else{
+                holoAng(Bones["LegParent",number],holoEntity(Bones["Root",number]):toWorld(ang(0,0,0)))
+                holoAng(Bones["HandParent",number],holoEntity(Bones["Root",number]):toWorld(ang(0,0,0)))
+                Ranger = rangerOffsetHull((LengthA_Arm+LengthB_Arm)*1,holoEntity(Bones["Spine",number]):toWorld(vec(0,-12,15)),holoEntity(Bones["Spine",number]):toWorld(ang(18,0,0)):up(),vec(8,8,0))
+                Target = Ranger:pos()+Ranger:hitNormal()
                 HandAng = holoEntity(Bones["Root",number]):toWorld(slerp(quat(Next["LastLeftHandAng",angle]),quat(Next["NextLeftHandAng",angle]),StepTime):toAngle())
                 ShoulderAng = slerp(quat(Next["LastLeftArmAng",angle]),quat(Next["NextLeftArmAng",angle]),StepTime):toAngle()
-            }else{
-                Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(25+25*(MoveW)+15*(ShiftVal),-8-12*MovingVal,65))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*Step+((1-StepTime)*!Step)),-Base:up(),vec(8,8,0))
-                Target = Ranger:pos()+Ranger:hitNormal()*(3+8*sin(StepTime*180)*MovingVal*!Step)
-                HandAng = holoEntity(Bones["Root",number]):toWorld(slerp(quat(Next["LastLeftHandAng",angle]),quat(Next["NextLeftHandAng",angle]),StepTime):toAngle())
-                ShoulderAng = slerp(quat(Next["LastLeftArmAng",angle]),quat(Next["NextLeftArmAng",angle]),StepTime):toAngle()
-            }
-            quat_ik(0, Target, HandAng, ShoulderAng)
-            
-            local Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(25+25*(MoveW)+15*(ShiftVal),8+12*MovingVal,65))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*Step+((1-StepTime)*!Step)),-Base:up(),vec(8,8,0))
-            local Target = Ranger:pos()+Ranger:hitNormal()*(3+8*sin(StepTime*180)*MovingVal*!Step)
-            local HandAng = holoEntity(Bones["Root",number]):toWorld(slerp(quat(Next["LastRightHandAng",angle]),quat(Next["NextRightHandAng",angle]),StepTime):toAngle())
-            local ShoulderAng = slerp(quat(Next["LastRightArmAng",angle]),quat(Next["NextRightArmAng",angle]),StepTime):toAngle()
-            
-            quat_ik(1, Target, HandAng, ShoulderAng)
-            
-            
-            if(ShiftVal==0){
-                Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(-5-2*(MoveA-MoveD),15-2*MovingVal,TargetHeight))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*!Step+((1-StepTime)*Step)),-Base:up(),vec(8,8,0))
-                Target = Ranger:pos()+Ranger:hitNormal()*(3+8*sin(StepTime*180)*MovingVal*Step)
-                LegRotation = 20*(1-MovingVal)
+                
+                two_seg_ik(0, Target, HandAng, ShoulderAng)
+                
+                local Ranger = rangerOffsetHull((LengthA_Arm+LengthB_Arm)*1,holoEntity(Bones["Spine",number]):toWorld(vec(0,12,15)),holoEntity(Bones["Spine",number]):toWorld(ang(18,0,0)):up(),vec(8,8,0))
+                local Target = Ranger:pos()+Ranger:hitNormal()
+                local HandAng = holoEntity(Bones["Root",number]):toWorld(slerp(quat(Next["LastRightHandAng",angle]),quat(Next["NextRightHandAng",angle]),StepTime):toAngle())
+                local ShoulderAng = slerp(quat(Next["LastRightArmAng",angle]),quat(Next["NextRightArmAng",angle]),StepTime):toAngle()
+                
+                two_seg_ik(1, Target, HandAng, ShoulderAng)
+                
+                
+                Target = holoEntity(Bones["Pelvis",number]):toWorld(vec(2,6,-55))
+                LegRotation = 0
                 FootAng = ang()
-            }else{
-                Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(-5-2*(MoveA-MoveD),15-2*MovingVal,TargetHeight))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*Step+((1-StepTime)*!Step)),-Base:up(),vec(8,8,0))
-                Target = Ranger:pos()+Ranger:hitNormal()*(3+8*sin(StepTime*180)*MovingVal*!Step)
-                LegRotation = 20*(1-MovingVal)
-                FootAng = ang()
+                
+                digi_ik(0, Target, LegRotation, FootAng)
+                
+                local Target = holoEntity(Bones["Pelvis",number]):toWorld(vec(2,-6,-55))
+                local LegRotation = 0
+                local FootAng = ang()
+                
+                digi_ik(1, Target, LegRotation, FootAng)
             }
-            digi_ik(0, Target, LegRotation, FootAng)
-            
-            local Ranger = rangerOffsetHull(100,holoEntity(Bones["Root",number]):toWorld(vec(-5+2*(MoveA-MoveD),-15+2*MovingVal,TargetHeight))-(holoEntity(Bones["LegParent",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance*IsOnGround,StepTime*Step+((1-StepTime)*!Step)),-Base:up(),vec(8,8,0))
-            local Target = Ranger:pos()+Ranger:hitNormal()*(3+8*sin(StepTime*180)*MovingVal*!Step)
-            local LegRotation = -20*(1-MovingVal)
-            local FootAng = ang()
-            
-            digi_ik(1, Target, LegRotation, FootAng)
         }else{
             holoAng(Bones["LegParent",number],holoEntity(Bones["Root",number]):toWorld(ang(0,EyeAngLocal:yaw()*0.5+4*StepSins[5,number]*(!Step-Step)+45*(MoveA-MoveD),0)))
             holoAng(Bones["HandParent",number],holoEntity(Bones["Root",number]):toWorld(ang(0,EyeAngLocal:yaw()*0.5+4*StepSins[5,number]*(!Step-Step)+45*(MoveA-MoveD),0)))
@@ -1770,7 +1828,7 @@ function void movementAnimations(){
                 local HandAng = holoEntity(Bones["Spine",number]):toWorld(slerp(quat(Next["LastLeftHandAng",angle]),quat(Next["NextLeftHandAng",angle]),StepTime):toAngle())
                 local ShoulderAng = slerp(quat(Next["LastLeftArmAng",angle]),quat(Next["NextLeftArmAng",angle]),StepTime):toAngle()
                 
-                quat_ik(0, Target, HandAng, ShoulderAng)
+                two_seg_ik(0, Target, HandAng, ShoulderAng)
                 
                 local Ranger = rangerOffsetHull((LengthA_Arm+LengthB_Arm)*0.5+Next["right_ranger",ranger]:distance()/(LengthA_Arm+LengthB_Arm),holoEntity(Bones["UpperArm_Left",number]):pos(),holoEntity(Bones["LegParent",number]):toWorld(vec(0,1,0))-holoEntity(Bones["LegParent",number]):pos(),vec(15,15,0))
                 Next["right_reach_mix",number]=Next["right_reach_mix",number]+0.35*(Ranger:hit()-!Ranger:hit())
@@ -1781,7 +1839,7 @@ function void movementAnimations(){
                 local HandAng = holoEntity(Bones["Spine",number]):toWorld(slerp(quat(Next["LastRightHandAng",angle]),quat(Next["NextRightHandAng",angle]),StepTime):toAngle())
                 local ShoulderAng = slerp(quat(Next["LastRightArmAng",angle]),quat(Next["NextRightArmAng",angle]),StepTime):toAngle()
                 
-                quat_ik(1, Target, HandAng, ShoulderAng)
+                two_seg_ik(1, Target, HandAng, ShoulderAng)
                 
             }else{
                 Distance2=-clamp(Base:vel():length()*(3+2*ShiftVal)*(curtime()-Delays["animationDelay",number]),0,(LengthA+LengthB+LengthC)*2)/(1+ShiftVal*0.05)
@@ -1791,17 +1849,17 @@ function void movementAnimations(){
                 local HandAng = holoEntity(Bones["Spine",number]):toWorld(slerp(quat(Next["LastLeftHandAng",angle]),quat(Next["NextLeftHandAng",angle]),StepTime):toAngle())
                 local ShoulderAng = slerp(quat(Next["LastLeftArmAng",angle]),quat(Next["NextLeftArmAng",angle]),StepTime):toAngle()
                 
-                quat_ik(0, Target, HandAng, ShoulderAng)
+                two_seg_ik(0, Target, HandAng, ShoulderAng)
                 
                 local Target = holoEntity(Bones["Spine",number]):toWorld(mix(Next["NextRightHandPos",vector],Next["LastRightHandPos",vector],StepTime)*Size)
                 local HandAng = holoEntity(Bones["Spine",number]):toWorld(slerp(quat(Next["LastRightHandAng",angle]),quat(Next["NextRightHandAng",angle]),StepTime):toAngle())
                 local ShoulderAng = slerp(quat(Next["LastRightArmAng",angle]),quat(Next["NextRightArmAng",angle]),StepTime):toAngle()
                 
-                quat_ik(1, Target, HandAng, ShoulderAng)
+                two_seg_ik(1, Target, HandAng, ShoulderAng)
                 
             }
             
-            local Ranger = rangerOffsetHull(100,-clamp((holoEntity(Bones["Root",number]):toWorld(Dir2)-holoEntity(Bones["Root",number]):pos())*Base:vel():length()*0.1,vec(-25),vec(25))+
+            local Ranger = rangerOffsetHull(LengthA+LengthB+LengthC,-clamp((holoEntity(Bones["Root",number]):toWorld(Dir2)-holoEntity(Bones["Root",number]):pos())*Base:vel():length()*0.1,vec(-25),vec(25))+
             holoEntity(Bones["Pelvis",number]):toWorld(vec(-8*(MoveA-MoveD),8-8*MovingVal,0):rotateAroundAxis(vec(0,0,1),-holoEntity(Bones["Root",number]):toLocal(holoEntity(Bones["Pelvis",number]):angles()):yaw()))-
             (holoEntity(Bones["Root",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Base:vel():normalized()*clamp(Base:vel():length()*1.1,0,0.7)*Distance2*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance2*IsOnGround,StepTime*Step+((1-StepTime)*!Step)),vec(0,0,-1),vec(8,8,0))
             local TargetLeft = Ranger:pos()+Ranger:hitNormal()*(3+(8+6*ShiftVal)*sin(StepTime*180)*(MovingVal|FinishStep)*!Step)-holoEntity(Bones["LegParent",number]):right()*5*MovingVal*!Step*StepSins[1,number]*(MoveW-MoveS)
@@ -1810,7 +1868,7 @@ function void movementAnimations(){
             
             digi_ik(0, TargetLeft, LegRotation, FootAng)
             
-            local Ranger = rangerOffsetHull(100,-clamp((holoEntity(Bones["Root",number]):toWorld(Dir2)-holoEntity(Bones["Root",number]):pos())*Base:vel():length()*0.1,vec(-25),vec(25))+
+            local Ranger = rangerOffsetHull(LengthA+LengthB+LengthC,-clamp((holoEntity(Bones["Root",number]):toWorld(Dir2)-holoEntity(Bones["Root",number]):pos())*Base:vel():length()*0.1,vec(-25),vec(25))+
             holoEntity(Bones["Pelvis",number]):toWorld(vec(8*(MoveA-MoveD),-8+8*MovingVal,0):rotateAroundAxis(vec(0,0,1),-holoEntity(Bones["Root",number]):toLocal(holoEntity(Bones["Pelvis",number]):angles()):yaw()))-
             (holoEntity(Bones["Root",number]):toWorld(vec(0,2*StepSins[1,number]*(Step-!Step),0))-holoEntity(Bones["Root",number]):pos())+mix(Base:vel():normalized()*clamp(Base:vel():length()*1.1,0,0.7)*Distance2*IsOnGround,-Vel:normalized()*clamp(Vel:length()*1.1,0,0.7)*Distance2*IsOnGround,StepTime*!Step+((1-StepTime)*Step)),vec(0,0,-1),vec(8,8,0))
             local TargetRight = Ranger:pos()+Ranger:hitNormal()*(3+(8+6*ShiftVal)*sin(StepTime*180)*(MovingVal|FinishStep)*Step)+holoEntity(Bones["LegParent",number]):right()*5*MovingVal*Step*StepSins[1,number]*(MoveW-MoveS)
@@ -1828,7 +1886,7 @@ function void movementAnimations(){
             
             StepSins[6,number]=StepSins[1,number]
             if(CurrentStance=="onAllFours"){
-                holoPos(Bones["Pelvis",number],clamp((holoEntity(Bones["Root",number]):toWorld(Dir2)-holoEntity(Bones["Root",number]):pos())*Base:vel():length()*0.1,vec(-15-25*ShiftVal),vec(15+25*ShiftVal))+holoEntity(Bones["Root",number]):toWorld(vec(-5,2*sin((StepTime*(Step-!Step))*MovingVal*180)*IsOnGround,(HeightVal+7*ShiftVal*(1-bezier(vec(1),vec(),vec(1),sin((StepTime)*90)):x()*clamp(Base:vel():length()*0.025,0,1))*IsOnGround))*Size))
+                holoPos(Bones["Pelvis",number],clamp((holoEntity(Bones["Root",number]):toWorld(Dir2)-holoEntity(Bones["Root",number]):pos())*Base:vel():length()*0.1,vec(-15-25*ShiftVal),vec(15+25*ShiftVal))+holoEntity(Bones["Root",number]):toWorld(vec(-5,1*sin((StepTime*(Step-!Step))*MovingVal*180)*IsOnGround,(HeightVal+7*ShiftVal*(1-bezier(vec(1),vec(),vec(1),sin((StepTime)*90)):x()*clamp(Base:vel():length()*0.025,0,1))*IsOnGround))*Size))
             }else{
                 holoPos(Bones["Pelvis",number],clamp((holoEntity(Bones["Root",number]):toWorld(Dir2)-holoEntity(Bones["Root",number]):pos())*Base:vel():length()*0.1,vec(-15-25*ShiftVal),vec(15+25*ShiftVal))+holoEntity(Bones["Root",number]):toWorld(vec(0,0.2*sin((StepTime*(Step-!Step))*MovingVal*180)*IsOnGround,(HeightVal+2*(1-bezier(vec(1),vec(),vec(1),sin((StepTime)*90)):x()*clamp(Base:vel():length()*0.025,0,1))*IsOnGround))*Size))
             }
@@ -1838,9 +1896,13 @@ function void movementAnimations(){
 event tick(){
     if(Ready){
         SpeedIncrease=Base:vel():length()*0.001/(1+ShiftVal)
-        StepIncrease=(0.125+0.15*(ShiftVal|FinishStep*!Moving))*(CurrentStance=="onAllFours" ? 1.4 : 1)
+        if(CurrentStance=="onAllFours"){
+            StepIncrease=(0.125+0.05*(ShiftVal|FinishStep*!Moving))*1.2
+        }else{
+            StepIncrease=(0.125+0.15*(ShiftVal|FinishStep*!Moving))
+        }
         StepTime+=(StepIncrease+(SpeedIncrease+SpeedIncrease*0.5*ShiftVal))/10
-        StepTime=clamp(StepTime,0,1)
+        StepTime=clamp(StepTime,0,1*IsOnGround)
         if(changed(StepTime)&(StepTime>=1)){
             StepTime=0
             Step=!Step
@@ -1880,7 +1942,7 @@ event tick(){
                 findIncludePlayerProps(owner())
                 findIncludeClass(entity():type())
                 findExcludeEntity(entity())
-                findInBox(Base:pos()-vec(75,75,0),Base:pos()+vec(75,75,100))
+                findInBox(Base:pos()-vec(75,75,0),Base:pos()+vec(75,75,150))
                 findClipToClass(entity():type())
                 findClipToModel("models/sprops/cuboids/height36/size_1/cube_36x18x36.mdl")
                 findSortByDistance(Base:pos())
@@ -1894,8 +1956,10 @@ event tick(){
         if(VentData["entity",entity]:pos():distance(Base:pos())>150){
             VentData:removeEntity("entity")
         }
-        
-        if(curtime()-Delays["moveDelta",number]>0.1){
+        OnWall=max(clamp(-15+abs(Base:angles():roll()/25),0,1),clamp(-15+abs(Base:angles():pitch()/25),0,1))
+        CanGoOnWalls=(CurrentStance=="onAllFours"&!(ShiftVal>=0.5))
+        if(curtime()-Delays["moveDelta",number]>0.05){
+            MovementDelta=1+(curtime()-Delays["moveDelta",number])
             WallAnglePitch=-90*clamp(1-rangerOffsetHull(250+Base:velL():x()*0.1,Base:pos(),Base:forward(),vec(5,5,5)):distance()*0.01,0,1)
             WallAngleRoll=90*clamp(1-rangerOffsetHull(250+abs(Base:velL():y())*0.1,Base:pos(),-Base:right(),vec(5,5,5)):distance()*0.01,0,1)-90*clamp(1-rangerOffsetHull(250+abs(Base:velL():y())*0.1,Base:pos(),Base:right(),vec(5,5,5)):distance()*0.01,0,1)
             WallData = Base:getWallclimbProperties(vec(),50, 4, 10, 4, 1.283, ang(WallAnglePitch,0,WallAngleRoll),-15)
@@ -1906,22 +1970,22 @@ event tick(){
                 }else{
                     EyeAngYaw=Base:toLocal(Base:angles()):yaw()
                 }
-                Base:applyAngForce((Base:toLocal(ang(0,Base:angles():yaw(),0))*15*(CurrentStance!="onAllFours") + ang(WallAnglePitch*(CurrentStance=="onAllFours"),EyeAngYaw,WallAngleRoll*(CurrentStance=="onAllFours")) * 5 + (WallData["rotation", angle]:setYaw(0)*(CurrentStance=="onAllFours")) * 25 - Base:angVel() * 1.5) * Base:mass())
+                Base:applyAngForce((Base:toLocal(ang(0,Base:angles():yaw(),0))*15*!CanGoOnWalls + ang(WallAnglePitch*CanGoOnWalls,EyeAngYaw,WallAngleRoll*CanGoOnWalls) * 5 + clamp((WallData["rotation", angle]:setYaw(0)*CanGoOnWalls) * 50 ,-ang(250),ang(250)) - Base:angVel() * 2.5) * Base:mass()*MovementDelta)
             }else{
                 if(HasLanded){
                     Base:applyAngForce((Base:toLocal(ang(0,Base:angles():yaw(),0)) * 2 - (Base:angVel() * 1)) * Base:mass())
                 }else{
-                    Base:applyAngForce((Base:toLocal(Base:vel():toAngle():rotateAroundAxis(vec(0,1,0):rotateAroundAxis(vec(0,0,1),Base:angles():yaw()),-35)) * 5 -(Base:angVel() * 1)) * Base:mass())
+                    Base:applyAngForce((Base:toLocal(Base:vel():toAngle():rotateAroundAxis(vec(0,1,0):rotateAroundAxis(vec(0,0,1),Base:angles():yaw()),-15)) * 5 -(Base:angVel() * 1)) * Base:mass())
                 }
             }
-            if(CurrentStance=="onAllFours"){
+            if(CanGoOnWalls){
                 Hover = ((WallData["center", vector]-(Base:up()*20)) + Base:pos() * 3) / 4  + Base:up() * 20  - Base:pos()
             }else{
                 Hover = vec(0,0,clamp((Height-BaseRanger:distance())*0.5,-Height*0.5,Height*0.5))
             }
             Delays["moveDelta",number]=curtime()
         }
-        Base:applyForce((((Base:toWorld(Dir2*(100*SpeedMult/100)/20) - Base:pos()) + Hover) * 35 - Base:vel() * 0.8) * Base:mass() * IsOnGround * 2)
+        Base:applyForce((((Base:toWorld(Dir2*(100*SpeedMult/100)/20) - Base:pos()) + Hover) * 35 - Base:vel() * 0.8) * Base:mass() * IsOnGround)
         if(VentData["lockCamera",number]){
             Seat:podThirdPerson(0)
             Seat:podThirdPersonDist(0)
@@ -1949,11 +2013,12 @@ if(clk("int")){
     Space = PLY:keyJump()
     Control = PLY:keyDuck()
     Alt = PLY:keyWalk()
+    V = PLY:keyPressed("v")
     LightAttack = PLY:keyAttack1()
     HeavyAttack = PLY:keyAttack2()
     BlockCam = PLY:keyPressed("1")
     
-    if(changed(Alt)&Alt){
+    if(changed(V)&V){
         Config["tp",number]=!Config["tp",number]
     }
     
@@ -1964,15 +2029,16 @@ if(clk("int")){
     AimMix+=(!Config["blockCam",number]-Config["blockCam",number])/5
     AimMix=clamp(AimMix,0,1)
     
-    MixEyeAng=AimMix
+    MixEyeAng=max(AimMix,!IsOnGround)
     EyeAng=slerp(quat(Base:angles()),quat(PLY:eyeAngles()),MixEyeAng):toAngle()
     
     Moving=W|S|A|D
     MovingVal+=(Moving-!Moving)/5
     MovingVal=clamp(MovingVal,FinishStep,1)*(1-Anim["isPlaying",number])
     
-    ShiftVal+=((Shift&Moving)-!(Shift&Moving))/7
+    ShiftVal+=((Shift&Moving)-!(Shift&Moving))/15
     ShiftVal=clamp(ShiftVal,0,1*(Base:vel():length()>25))
+    ShiftVal=clamp(ShiftVal-MoveS-max(MoveA,MoveD)*0.25,0,1)
     
     MoveW+=(W*!MoveS-(S|!W))/(5+5*ShiftVal)
     MoveW=clamp(MoveW,0,1)
@@ -2011,9 +2077,9 @@ if(clk("int")){
     SpeedMult = mix(vec(SpeedSettings:y()),vec(SpeedSettings:x()),ShiftVal):x()*MovingVal
     
     if(changed(Space) & Space) {
-        if(VentData["entity",entity]:isValid()){
+        if(VentData["entity",entity]:isValid()&!OnWall){
             ventTransition()
-        }#[elseif(IsOnGround){
+        }elseif(IsOnGround){
             Jumping=1
             HasLanded=0
             Base:propSetVelocity((EyeAng:forward()+(Base:up()*0.2))*35*25)
@@ -2023,15 +2089,15 @@ if(clk("int")){
             if(CurrentStance!="onAllFours"){
                 CurrentStance="onAllFours"
             }
-        }]#
+        }
     }
     if(VentData["state",string]=="outside"){
         if(changed(Alt) & Alt) {
-            #toggleStalkStance()
+            toggleStalkStance()
         }
         
         if(changed(Control) & Control) {
-            toggleStalkStance()#toggleStance()
+            toggleStance()
         }
         
         if((changed(LightAttack) & LightAttack) | (changed(HeavyAttack) & HeavyAttack)) {

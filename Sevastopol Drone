@@ -550,14 +550,14 @@ if(first()){
     function array:holo() {
         local Index = This[1, number]
         
-        holoCreate(Index, (This[2,entity]:isValid() ? This[2,entity] : (holoEntity(This[2,number]):isValid() ? holoEntity(This[2,number]) : entity())):toWorld(This[5, vector]*((Index<=Bones["RigEnd",number]) ? Size : 1)), (This[7, number] ? vec(This[7, number]) : This[7, vector])*((Index<=Bones["RigEnd",number]) ? Size : 1), (This[2,entity]:isValid() ? This[2,entity] : (holoEntity(This[2,number]):isValid() ? holoEntity(This[2,number]) : entity())):toWorld(This[6, angle]))
+        holoCreate(Index, (This[2,entity]:isValid() ? This[2,entity] : (holoEntity(This[2,number]):isValid() ? holoEntity(This[2,number]) : entity())):toWorld(This[5, vector]*((Index<=Bones["RigEnd",number]) ? Size : 1)), (This[7, number] ? vec(This[7, number]) : This[7, vector])*((Index<=Bones["RigEnd",number]) ? Size : 1)*(This[8, string]=="models/pac/default.mdl" ? 0.89 : 1), (This[2,entity]:isValid() ? This[2,entity] : (holoEntity(This[2,number]):isValid() ? holoEntity(This[2,number]) : entity())):toWorld(This[6, angle]))
         holoParent(Index, This[2,entity]:isValid() ? This[2,entity] : (holoEntity(This[2,number]):isValid() ? holoEntity(This[2,number]) : entity()))
-        holoModel(Index, This:exists(8) ? This[8, string] : "cube")
+        holoModel(Index, This:exists(8) ? This[8, string]=="models/pac/default.mdl" ? "models/sprops/geometry/sphere_18.mdl" : This[8, string] : "cube")
         IsSkin=This[9, string]=="Skin"
         IsDome=This[9, string]=="Dome"
-        holoMaterial(Index, This:exists(9) ? IsSkin ? "models/weapons/v_stunbaton/w_shaft01a" : IsDome ? "" : This[9, string] : "")
+        holoMaterial(Index, This:exists(9) ? IsSkin ? "models/props_debris/plasterwall034a" : IsDome ? "models/debug/debugwhite" : This[9, string] : "")
         if(IsSkin){
-            holoColor(Index, vec(125))
+            holoColor(Index, vec(25))
         }elseif(IsDome){
             holoColor(Index, vec(185))
         }else{

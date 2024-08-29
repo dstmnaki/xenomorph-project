@@ -1424,7 +1424,7 @@ if(first()){
     function number entity:isSeenBy(Player:entity){
         local Angle = toLocalAng(This:pos(),(This:pos()-Player:shootPos()):toAngle(),Player:shootPos(),Player:eyeAngles())
         rangerFilter(Player)
-        YawOk=abs(Angle:yaw())<70
+        YawOk=abs(Angle:yaw())<120
         if(YawOk){
             VisibleOk=rangerOffset(Player:shootPos():distance(This:pos()),Player:shootPos(),(This:pos()-Player:shootPos()):normalized()):pos():distance(This:pos())<5
         }
@@ -1432,7 +1432,7 @@ if(first()){
     }
     function number vector:isSeenBy(Pos:vector,Dir:vector){
         local Angle = toLocalAng(Pos,Dir:toAngle(),This,(This-Pos):toAngle())
-        YawOk=abs(Angle:yaw())<70
+        YawOk=abs(Angle:yaw())<120
         if(YawOk){
             VisibleOk=rangerOffset(Pos:distance(This),Pos,(This-Pos):normalized()):pos():distance(This)<25
         }

@@ -1536,42 +1536,53 @@ if(first()){
     }
     function void aiFindTarget(){
         if((curtime()-AiData["findTargetDelta",number])>=(0.05+0.1*AiData["lookAtTarget",number])){
-            if((AiData["hasTarget",number]==0)&(VentData["state",string]=="outside")){
-                NextT=AiData["players",table][1+AiData["checkNext",number],entity]
-                DistT=NextT:pos():distance(holoEntity(Bones["Root",number]):pos())
-                BuildUp=clamp((1-clamp(-1+DistT*0.005,0,1))+(NextT:vel():length()/400),0.1,1)
-                if(!NextT:inNoclip()&(DistT<=2000)){
-                    if(NextT:shootPos():isSeenBy(holoEntity(Bones["Head",number]):toWorld(vec(4,0,0)),holoEntity(Bones["Head",number]):forward())){
-                        AiData["hasTargetBuildup",number]=AiData["hasTargetBuildup",number]+BuildUp
-                        AiData["targetVec",vector]=NextT:pos()
-                        AiData["blockMovement",number]=1
-                        AiData["lookAtTarget",number]=1
-                        if(AiData["hasTargetBuildup",number]>0.1){
-                            AiData["seenPlayer",number]=1
-                        }
-                        if(AiData["hasTargetBuildup",number]>=1){
-                            AiData["targetEnt",entity]=NextT
-                            AiData["hasTarget",number]=1
-                            AiData["checkNext",number]=0
-                            AiData["blockMovement",number]=0
-                            AiData["lookAtTarget",number]=0
-                            AiData["hasTargetBuildup",number]=0
-                            AiData["heardPlayer",number]=0
+            if((VentData["state",string]=="outside")){
+                if((AiData["hasTarget",number]==0)){
+                    NextT=AiData["players",table][1+AiData["checkNext",number],entity]
+                    DistT=NextT:pos():distance(holoEntity(Bones["Root",number]):pos())
+                    BuildUp=clamp((1-clamp(-1+DistT*0.005,0,1))+(NextT:vel():length()/400),0.1,1)
+                    if(!NextT:inNoclip()&(DistT<=2000)){
+                        if(NextT:shootPos():isSeenBy(holoEntity(Bones["Head",number]):toWorld(vec(4,0,0)),holoEntity(Bones["Head",number]):forward())){
+                            AiData["hasTargetBuildup",number]=AiData["hasTargetBuildup",number]+BuildUp
+                            AiData["targetVec",vector]=NextT:pos()
+                            AiData["blockMovement",number]=1
+                            AiData["lookAtTarget",number]=1
+                            if(AiData["hasTargetBuildup",number]>0.1){
+                                AiData["seenPlayer",number]=1
+                            }
+                            if(AiData["hasTargetBuildup",number]>=1){
+                                AiData["targetEnt",entity]=NextT
+                                AiData["hasTarget",number]=1
+                                AiData["checkNext",number]=0
+                                AiData["blockMovement",number]=0
+                                AiData["lookAtTarget",number]=0
+                                AiData["hasTargetBuildup",number]=0
+                                AiData["heardPlayer",number]=0
+                            }
+                        }else{
+                            if(AiData["heardPlayer",number]|AiData["seenPlayer",number]){
+                                AiData["investigate",number]=1
+                                AiData["blockMovement",number]=0
+                            }
+                            AiData["checkNext",number]=AiData["checkNext",number]+1
+                            if(AiData["checkNext",number]>AiData["players",table]:count()){
+                                AiData["checkNext",number]=0
+                            }
                         }
                     }else{
-                        if(AiData["heardPlayer",number]|AiData["seenPlayer",number]){
-                            AiData["investigate",number]=1
-                            AiData["blockMovement",number]=0
-                        }
                         AiData["checkNext",number]=AiData["checkNext",number]+1
                         if(AiData["checkNext",number]>AiData["players",table]:count()){
                             AiData["checkNext",number]=0
                         }
                     }
                 }else{
-                    AiData["checkNext",number]=AiData["checkNext",number]+1
-                    if(AiData["checkNext",number]>AiData["players",table]:count()){
-                        AiData["checkNext",number]=0
+                    if((AiData["targetEnt",entity]:shootPos():isSeenBy(holoEntity(Bones["Head",number]):toWorld(vec(4,0,0)),holoEntity(Bones["Head",number]):forward()))){
+                        AiData["targetVec",vector]=AiData["targetEnt",entity]:pos()
+                    }else{
+                        AiData["hasTarget",number]=0
+                        AiData["hasTargetVec",number]=1
+                        AiData["investigate",number]=1
+                        AiData["investigateFaster",number]=1
                     }
                 }
             }
@@ -1598,9 +1609,14 @@ if(first()){
         if(AiData["isMoving",number]|AiData["lookAtTarget",number]){
             EyeTarget=AiData["hasTarget",number] ? AiData["targetEnt",entity]:pos() : AiData["targetVec",vector]
             TargetAng=((EyeTarget-Base:pos()):toAngle():yaw())
+        }elseif(AiData["lookAround",number]){
+            Anim["LookAround",number]=Anim["LookAround",number]+(0.02+0.01*abs(sin(systime()*180)))
+            if(Anim["LookAround",number]>=1){
+                Anim["LookAround",number]=0
+            }
+            TargetAng=ang(0,Base:angles():yaw()+25*sin(Anim["LookAround",number]*360),0):yaw()
         }else{
-            EyeTarget=Base:toWorld(vec(100,0,0))
-            TargetAng=ang(0,25*sin(curtime()*180)*0,0):yaw()
+            TargetAng=ang(0,Base:angles():yaw(),0):yaw()
         }
         AiData["eyeAngles",angle]=slerp(quat(ang(0,TargetAng,0)),quat(AiData["eyeAngles",angle]),0.45):toAngle()
         EyeAng=AiData["eyeAngles",angle]

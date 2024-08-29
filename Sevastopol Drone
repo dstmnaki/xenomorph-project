@@ -1542,7 +1542,7 @@ if(first()){
                 NextT=AiData["players",table][1+AiData["checkNext",number],entity]
                 DistT=NextT:pos():distance(Base:pos())
                 BuildUp=clamp((1-clamp(-1+DistT*0.005,0,1))+(NextT:vel():length()/400),0.2,1)
-                if(!NextT:inNoclip()&(DistT<=1500)){
+                if(!NextT:inNoclip()&(DistT<=2000)){
                     if(NextT:shootPos():isSeenBy(holoEntity(Bones["Head",number]):toWorld(vec(4,0,0)),holoEntity(Bones["Head",number]):forward())){
                         AiData["hasTargetBuildup",number]=AiData["hasTargetBuildup",number]+BuildUp
                         AiData["targetVec",vector]=NextT:pos()

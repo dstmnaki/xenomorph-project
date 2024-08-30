@@ -1501,7 +1501,7 @@ if(first()){
         }else{
             AiData["restoreMovement",number]=0
         }
-        if(((curtime()-AiData["getNextPointDelta",number])>=0.05)&(AiData["hasTargetVec",number]==0)&(AiData["hasTarget",number]==0)&(AiData["seenPlayer",number]==0)&(AiData["heardPlayer",number]==0)){
+        if(((curtime()-AiData["getNextPointDelta",number])>=0.05)&(AiData["hasTargetVec",number]==0)&(AiData["chasingTarget",number]==0)&(AiData["hasTarget",number]==0)&(AiData["seenPlayer",number]==0)&(AiData["heardPlayer",number]==0)){
             if(AiData["isSearching",number]==0){
                 AiData["isSearching",number]=1
                 AiData["searchForInterestPoints",table]=table()
@@ -1928,6 +1928,9 @@ if(first()){
                         AiData["heardPlayer",number]=0
                         AiData["seenPlayer",number]=0
                         AiData["aiIsAttacking",number]=0
+                        AiData["chasingTarget",number]=0
+                        AiData["heardPlayer",number]=0
+                        AiData["seenPlayer",number]=0
                     }
                 }
                 if((curtime()-AiData["sortPlayersDelta",number])>=0.1){

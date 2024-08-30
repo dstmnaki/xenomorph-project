@@ -47,7 +47,7 @@ if(first()){
     
     Config["TailSegmentCount",number]=12
     
-    AiData["enabled",number]=0
+    AiData["enabled",number]=1
     
     CurrentStance = select(1,"upright","stalking","onAllFours")
     
@@ -117,6 +117,9 @@ if(first()){
     I++, HN++, HT[HN,array] = array(I, Bones["Jaw",number], noentity(), 0, vec(4.5,0,0.3), ang(0, 0, 0), BoneScale*ShowBones*ShowallBones, BoneMdl),Bones["DroolParent",number]=I
     
     I++, HN++, HT[HN,array] = array(I, Bones["Pelvis",number], noentity(), 0, vec(-6.5,0,-0.5), ang(-40-180,0,0), BoneScale*ShowBones, BoneMdl),Bones["TailParent",number]=I
+    
+    I++, HN++, HT[HN,array] = array(I, noentity(), noentity(), 0, vec(0, 0, 0), ang(0,0,0), BoneScale*ShowBones*ShowallBones|1, "cube", "", vec(0,255,0)),Bones["TargetPos",number]=I
+    I++, HN++, HT[HN,array] = array(I, noentity(), noentity(), 0, vec(0, 0, 0), ang(0,0,0), BoneScale*ShowBones*ShowallBones|1, "cube", "", vec(255,255,0)),Bones["NextTargetPos",number]=I
     
     for(I2=1,Config["TailSegmentCount",number]){
         I++, HN++, HT[HN,array] = array(I, I2==1 ? Bones["TailParent",number] : Bones["Tail_"+(I2-1),number], noentity(), 0, vec(-10, 0, 0), ang(0, 0, 0), BoneScale*ShowBones, BoneMdl),Bones["Tail_"+I2,number]=I
@@ -1438,51 +1441,98 @@ if(first()){
         }
         return YawOk*VisibleOk
     }
+    function number vector:isSeenBy(Pos:vector){
+        VisibleOk=rangerOffset(Pos:distance(This),Pos,(This-Pos):normalized()):pos():distance(This)<25
+        return VisibleOk
+    }
     function void initialize(){
-        dsSetScope(2)
-        dsJoinGroup("xenomorph_core")
         CurrentStance=="upright"
         AiData["initialized",number]=1
     }
-    function void getNextPoint(){
-        if(((curtime()-AiData["getNextPointDelta",number])>=0.1)&(AiData["hasTargetVec",number]==0)){
-            if(AiData["hasNavMesh",number]){
-                findSetResults(AiData["navMesh",table]:toArray())
-                findSortByDistance(Base:pos())
-                NavMesh=findToTable()
-                if(NavMesh:exists(2+AiData["checkNext",number])){
-                    NextV=NavMesh[2+AiData["checkNext",number],vector]
-                    AiData["checkNext",number]=AiData["checkNext",number]+1
-                    if(NextV:isSeenBy(holoEntity(Bones["Head",number]):toWorld(vec(4,0,0)),holoEntity(Bones["Head",number]):forward())){
-                        AiData["targetVec",vector]=NextV
-                        AiData["hasTargetVec",number]=1
-                        AiData["checkNext",number]=0
+    function void predefineNextPoint(){
+        if(((curtime()-AiData["getNextPointDelta2",number])>=0.1)){
+            if((AiData["hasTargetVec",number]==1)&(AiData["hasTarget",number]==0)&(AiData["hasNextTargetVec",number]==0)&(AiData["seenPlayer",number]==0)&(AiData["heardPlayer",number]==0)){
+                if(Base:pos():setZ(0):distance(AiData["targetVec",vector]:setZ(0))<1000){
+                    if(AiData["isSearching2",number]==0){
+                        AiData["isSearching2",number]=1
+                        AiData["searchForInterestPoints3",table]=table()
+                        AiData["searchForInterestPoints4",table]=table()
+                    }
+                    local Ranger=rangerOffset(2000,Base:pos(),ang(0,Base:angles():yaw()+55*sin(systime()*180),0):forward())
+                    if((Ranger:pos():distance(Base:pos())<2100)&(Ranger:distance()>400)){
+                        AiData["searchForInterestPoints3",table]:pushVector(Ranger:pos())
+                        AiData["searchForInterestPoints4",table]:pushNumber(Ranger:pos():distance(Base:pos()))
+                    }
+                    
+                    if(AiData["searchForInterestPoints3",table]:count()>25){
+                        local Vec=AiData["searchForInterestPoints3",table][AiData["searchForInterestPoints4",table]:maxIndex(),vector]
+                        AiData["nextTargetVec",vector]=Vec
+                        AiData["hasNextTargetVec",number]=1
+                        AiData["isSearching2",number]=0
                     }
                 }
+            }elseif(AiData["canSeePlayer",number]==0){
+                if(AiData["targetEnt",entity]:pos():setZ(0):distance(AiData["targetVec",vector]:setZ(0))<1000){
+                    if(AiData["targetEnt",entity]:shootPos():isSeenBy(AiData["targetVec",vector])&(AiData["hasLastKnownLocation",number]==0)){
+                        AiData["nextTargetVec",vector]=AiData["targetEnt",entity]:pos()
+                        AiData["hasNextTargetVec",number]=0
+                    }else{
+                        AiData["hasLastKnownLocation",number]=1
+                        AiData["hasNextTargetVec",number]=1
+                    }
+                }
+            }
+            AiData["getNextPointDelta2",number]=curtime()
+        }
+    }
+    function void getBackOnTrack(){
+        if(((AiData["blockMovement",number]==1)|(Base:vel():length()<5))&(AiData["isSearching",number]==0)&(AiData["seenPlayer",number]==0)&(AiData["heardPlayer",number]==0)&(AiData["hasNextTargetVec",number]==0)){
+            AiData["restoreMovement",number]=AiData["restoreMovement",number]+0.05
+            if(AiData["restoreMovement",number]>=1){
+                AiData["blockMovement",number]=0
+                AiData["restoreMovement",number]=0
+                AiData["hasTarget",number]=0
+                AiData["hasTargetVec",number]=0
+                AiData["investigate",number]=0
+                AiData["investigateFaster",number]=0
+                AiData["heardPlayer",number]=0
+                AiData["seenPlayer",number]=0
+            }
+        }else{
+            AiData["restoreMovement",number]=0
+        }
+        if(((curtime()-AiData["getNextPointDelta",number])>=0.05)&(AiData["hasTargetVec",number]==0)&(AiData["hasTarget",number]==0)&(AiData["seenPlayer",number]==0)&(AiData["heardPlayer",number]==0)){
+            if(AiData["isSearching",number]==0){
+                AiData["isSearching",number]=1
+                AiData["searchForInterestPoints",table]=table()
+                AiData["searchForInterestPoints2",table]=table()
+            }
+            local Ranger=rangerOffset(2000,Base:pos(),ang(0,systime()/4*360,0):forward())
+            if(Ranger:pos():distance(Base:pos())<2100){
+                AiData["searchForInterestPoints",table]:pushVector(Ranger:pos())
+                AiData["searchForInterestPoints2",table]:pushNumber(Ranger:pos():distance(Base:pos()))
+            }
+            AiData["lookingAround",number]=1
+            if(AiData["searchForInterestPoints",table]:count()>50){
+                local Vec=AiData["searchForInterestPoints",table][AiData["searchForInterestPoints2",table]:maxIndex(),vector]
+                AiData["targetVec",vector]=Vec
+                AiData["hasTargetVec",number]=1
+                AiData["lookingAround",number]=0
+                AiData["isSearching",number]=0
+                AiData["blockMovement",number]=0
+                AiData["investigate",number]=0
+                AiData["investigateFaster",number]=0
             }
             AiData["getNextPointDelta",number]=curtime()
         }
     }
-    function void setupNavMesh(){
-        if(((curtime()-AiData["setupNavMeshDelta",number])>=1)&(AiData["hasNavMesh",number]==0)){
-            dsSend("navmesh_get","xenomorph_core",table())
-            if(dsClk()){
-                switch(dsClkName()){
-                    case "navmesh_out",
-                        AiData["navMesh",table]=dsGetTable()
-                        AiData["hasNavMesh",number]=1
-                    break
-                }
-            }
-            AiData["setupNavMeshDelta",number]=curtime()
-        }
-    }
+    
     function void nearbyPlayerDetection(){
-        if(((curtime()-AiData["nearbyPlayerDelta",number])>=0.1)&(AiData["heardPlayer",number]==0)&(AiData["hasTarget",number]==0)){
+        if(((curtime()-AiData["nearbyPlayerDelta",number])>=0.1)&(AiData["heardPlayer",number]==0)&(AiData["chasingTarget",number]==0)){
             NextT=AiData["players",table][1+AiData["checkNext",number],entity]
             foreach(I:number,E:entity=AiData["players",table]){
                 if(E:pos():distance(Base:pos())<1000){
-                    if((E:vel():length()>(150+(400*E:pos():distance(Base:pos())/1000)))&E:isOnGround()){
+                    if((E:vel():length()>(150+(200*E:pos():distance(Base:pos())/1000)))&E:isOnGround()){
                         if(!E:inNoclip()){
                             NextT=E
                             AiData["targetVec",vector]=NextT:pos()
@@ -1491,6 +1541,8 @@ if(first()){
                             AiData["heardPlayer",number]=1
                             AiData["checkNext",number]=I-1
                             AiData["heardPlayerDelta",number]=curtime()
+                            AiData["lookingAround",number]=0
+                            AiData["isSearching",number]=0
                         }
                         if(VentData["state",string]=="inside"){
                             Space=1
@@ -1500,9 +1552,10 @@ if(first()){
                     }
                 }
             }
-            if(((curtime()-AiData["heardPlayerDelta",number])>2.5)&(AiData["heardPlayer",number]==1)){
+            if(((curtime()-AiData["heardPlayerDelta",number])>2.5)&(AiData["heardPlayer",number]==1)&(AiData["hasTargetVec",number]==0)&(AiData["investigate",number]==0)){
                 AiData["blockMovement",number]=0
                 AiData["hasTargetVec",number]=1
+                AiData["investigate",number]=1
             }
             AiData["nearbyPlayerDelta",number]=curtime()
         }
@@ -1511,16 +1564,18 @@ if(first()){
         if(AiData["hasTarget",number]==0){
             event bulletFired(Ent:entity, BulletData:table) {
                 if(Ent:pos():distance(holoEntity(Bones["Root",number]):pos())<4000){
-                    #if(!Ent:inNoclip()){
+                    if(!Ent:inNoclip()){
                         NextT=Ent
                         AiData["targetVec",vector]=Ent:pos()
                         AiData["lookAtTarget",number]=1
                         AiData["heardPlayer",number]=1
                         AiData["checkNext",number]=I-1
-                        AiData["investigateFaster",number]=1
                         AiData["blockMovement",number]=1
                         AiData["heardGunshotDelta",number]=curtime()
-                    #}
+                        AiData["lookingAround",number]=0
+                        AiData["isSearching",number]=0
+                        AiData["investigate",number]=0
+                    }
                     if(VentData["state",string]=="inside"){
                         Space=1
                         AiData["aiVentThinkTime",number]=randint(200,300)/10
@@ -1528,9 +1583,11 @@ if(first()){
                     }
                 }
             }
-            if(((curtime()-AiData["heardGunshotDelta",number])>1)&(AiData["heardPlayer",number]==1)){
+            if(((curtime()-AiData["heardGunshotDelta",number])>2)&(AiData["heardPlayer",number]==1)&(AiData["hasTargetVec",number]==0)&(AiData["investigate",number]==0)){
                 AiData["blockMovement",number]=0
                 AiData["hasTargetVec",number]=1
+                AiData["investigate",number]=1
+                AiData["investigateFaster",number]=1
             }
         }
     }
@@ -1542,7 +1599,7 @@ if(first()){
                     DistT=NextT:pos():distance(holoEntity(Bones["Root",number]):pos())
                     BuildUp=clamp((1-clamp(-1+DistT*0.005,0,1))+(NextT:vel():length()/400),0.1,1)
                     if(!NextT:inNoclip()&(DistT<=2000)){
-                        if(NextT:shootPos():isSeenBy(holoEntity(Bones["Head",number]):toWorld(vec(4,0,0)),holoEntity(Bones["Head",number]):forward())){
+                        if(NextT:shootPos():isSeenBy(Base:pos(),holoEntity(Bones["Head",number]):forward())&!NextT:inNoclip()){
                             AiData["hasTargetBuildup",number]=AiData["hasTargetBuildup",number]+BuildUp
                             AiData["targetVec",vector]=NextT:pos()
                             AiData["blockMovement",number]=1
@@ -1553,32 +1610,56 @@ if(first()){
                             if(AiData["hasTargetBuildup",number]>=1){
                                 AiData["targetEnt",entity]=NextT
                                 AiData["hasTarget",number]=1
+                                AiData["hasPath",number]=0
                                 AiData["checkNext",number]=0
                                 AiData["blockMovement",number]=0
                                 AiData["lookAtTarget",number]=0
                                 AiData["hasTargetBuildup",number]=0
                                 AiData["heardPlayer",number]=0
+                                AiData["lookingAround",number]=0
                             }
+                            AiData["investigateDelta",number]=curtime()
                         }else{
-                            if(AiData["heardPlayer",number]|AiData["seenPlayer",number]){
+                            if(((curtime()-AiData["investigateDelta",number])>1)&(AiData["heardPlayer",number]|AiData["seenPlayer",number])){
                                 AiData["investigate",number]=1
                                 AiData["blockMovement",number]=0
+                                AiData["hasTargetVec",number]=1
+                                if(AiData["hasTargetBuildup",number]>0.5){
+                                    AiData["investigateFaster",number]=1
+                                }
+                                AiData["hasTargetBuildup",number]=0
+                            }else{
+                                AiData["checkNext",number]=AiData["checkNext",number]+1
+                                if(AiData["checkNext",number]>AiData["players",table]:count()){
+                                    AiData["checkNext",number]=0
+                                }
                             }
+                        }
+                    }else{
+                        if(((curtime()-AiData["investigateDelta",number])>1)&(AiData["heardPlayer",number]|AiData["seenPlayer",number])){
+                            AiData["investigate",number]=1
+                            AiData["blockMovement",number]=0
+                            AiData["hasTargetVec",number]=1
+                            if(AiData["hasTargetBuildup",number]>0.5){
+                                AiData["investigateFaster",number]=1
+                            }
+                            AiData["hasTargetBuildup",number]=0
+                        }else{
                             AiData["checkNext",number]=AiData["checkNext",number]+1
                             if(AiData["checkNext",number]>AiData["players",table]:count()){
                                 AiData["checkNext",number]=0
                             }
                         }
-                    }else{
-                        AiData["checkNext",number]=AiData["checkNext",number]+1
-                        if(AiData["checkNext",number]>AiData["players",table]:count()){
-                            AiData["checkNext",number]=0
-                        }
                     }
                 }else{
-                    if((AiData["targetEnt",entity]:shootPos():isSeenBy(holoEntity(Bones["Head",number]):toWorld(vec(4,0,0)),holoEntity(Bones["Head",number]):forward()))){
+                    if((AiData["targetEnt",entity]:shootPos():isSeenBy(Base:pos(),holoEntity(Bones["Head",number]):forward()))&!AiData["targetEnt",entity]:inNoclip()){
                         AiData["targetVec",vector]=AiData["targetEnt",entity]:pos()
+                        AiData["hasLastKnownLocation",number]=0
+                        AiData["canSeePlayer",number]=1
+                        AiData["hasNextTargetVec",number]=0
+                        AiData["chasingTarget",number]=1
                     }else{
+                        AiData["canSeePlayer",number]=0
                         AiData["hasTarget",number]=0
                         AiData["hasTargetVec",number]=1
                         AiData["investigate",number]=1
@@ -1607,14 +1688,14 @@ if(first()){
     }
     function void aiLook(){
         if(AiData["isMoving",number]|AiData["lookAtTarget",number]){
-            EyeTarget=AiData["hasTarget",number] ? AiData["targetEnt",entity]:pos() : AiData["targetVec",vector]
+            EyeTarget=AiData["canSeePlayer",number] ? AiData["targetEnt",entity]:pos() : AiData["targetVec",vector]
             TargetAng=((EyeTarget-Base:pos()):toAngle():yaw())
-        }elseif(AiData["lookAround",number]){
+        }elseif(AiData["lookingAround",number]){
             Anim["LookAround",number]=Anim["LookAround",number]+(0.02+0.01*abs(sin(systime()*180)))
             if(Anim["LookAround",number]>=1){
                 Anim["LookAround",number]=0
             }
-            TargetAng=ang(0,Base:angles():yaw()+25*sin(Anim["LookAround",number]*360),0):yaw()
+            TargetAng=ang(0,Base:angles():yaw()+45*sin(Anim["LookAround",number]*360),0):yaw()
         }else{
             TargetAng=ang(0,Base:angles():yaw(),0):yaw()
         }
@@ -1696,14 +1777,23 @@ if(first()){
     }
     function void aiReachDestination(){
         if((holoEntity(Bones["Root",number]):pos():setZ(0):distance(AiData["targetVec",vector]:setZ(0))<150)&(AiData["hasTarget",number]==0)&(AiData["hasTargetVec",number]==1)){
-            AiData["hasTargetVec",number]=0
-            AiData["blockMovement",number]=1
-            AiData["investigate",number]=0
-            AiData["investigateFaster",number]=0
-            AiData["lookAtTarget",number]=0
-            AiData["hasTarget",number]=0
-            AiData["heardPlayer",number]=0
-            AiData["seenPlayer",number]=0
+            if(AiData["hasNextTargetVec",number]==1){
+                AiData["hasTargetVec",number]=1
+                AiData["blockMovement",number]=0
+                AiData["lookAtTarget",number]=1
+                AiData["targetVec",vector]=AiData["nextTargetVec",vector]
+                AiData["hasNextTargetVec",number]=0
+            }else{
+                AiData["hasTargetVec",number]=0
+                AiData["blockMovement",number]=1
+                AiData["investigate",number]=0
+                AiData["investigateFaster",number]=0
+                AiData["lookAtTarget",number]=0
+                AiData["hasTarget",number]=0
+                AiData["heardPlayer",number]=0
+                AiData["seenPlayer",number]=0
+                AiData["chasingTarget",number]=0
+            }
         }
     }
     function void aiThink(){
@@ -1712,20 +1802,39 @@ if(first()){
         }
         if(Anim["isPlaying",number]==0){
             if((curtime()-AiData["thinkDelta",number])>0.1){
-                
-                
                 if(VentData["state",string]=="outside"){
                     if(!AiData["hasTargetVec",number]){
-                        getNextPoint()
+                        getBackOnTrack()
+                    }else{
+                        predefineNextPoint()
+                        #rangerFilter(array(Base,Seat))
+                        if(rangerOffsetHull(Base:pos(),Base:pos()+(AiData["targetVec",vector]-Base:pos()):normalized()*(50+75*AiData["isRunning",number]),vec(15,15,0)):hit()){
+                            AiData["hasTargetVec",number]=0
+                            AiData["hasTarget",number]=0
+                            AiData["heardPlayer",number]=0
+                            AiData["seenPlayer",number]=0
+                            switch(randint(1,3)){
+                                case 1,
+                                    RandYaw=180
+                                break
+                                case 2,
+                                    RandYaw=180
+                                break
+                                case 3,
+                                    RandYaw=180
+                                break
+                            }
+                            AiData["eyeAngles",angle]=AiData["eyeAngles",angle]+RandYaw
+                            EyeAng=AiData["eyeAngles",angle]
+                        }
                     }
-                    
                     
                     aiMove()
                     aiLook()
                     aiFindTarget()
                 }
+                aiReachDestination()
                 if(AiData["hasTarget",number]==0){
-                    aiReachDestination()
                     
                     aiVent()
                     nearbyPlayerDetection()
@@ -1742,7 +1851,10 @@ if(first()){
                         AiData["blockMovement",number]=0
                         AiData["lookAtTarget",number]=0
                         AiData["hasTargetBuildup",number]=0
+                        AiData["investigate",number]=0
+                        AiData["investigateFaster",number]=0
                         AiData["heardPlayer",number]=0
+                        AiData["seenPlayer",number]=0
                         AiData["aiIsAttacking",number]=0
                     }
                 }
@@ -1751,6 +1863,14 @@ if(first()){
                     findSortByDistance(Base:pos())
                     AiData["players",table]=findToTable()
                 }
+                
+                if(changed(AiData["targetVec",vector])){
+                    holoPos(Bones["TargetPos",number],AiData["targetVec",vector])
+                }
+                if(changed(AiData["nextTargetVec",vector])){
+                    holoPos(Bones["NextTargetPos",number],AiData["nextTargetVec",vector])
+                }
+                
                 AiData["thinkDelta",number]=curtime()
             }
         }

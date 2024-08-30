@@ -118,8 +118,8 @@ if(first()){
     
     I++, HN++, HT[HN,array] = array(I, Bones["Pelvis",number], noentity(), 0, vec(-6.5,0,-0.5), ang(-40-180,0,0), BoneScale*ShowBones, BoneMdl),Bones["TailParent",number]=I
     
-    I++, HN++, HT[HN,array] = array(I, noentity(), noentity(), 0, vec(0, 0, 0), ang(0,0,0), BoneScale*ShowBones*ShowallBones|1, "cube", "", vec(0,255,0)),Bones["TargetPos",number]=I
-    I++, HN++, HT[HN,array] = array(I, noentity(), noentity(), 0, vec(0, 0, 0), ang(0,0,0), BoneScale*ShowBones*ShowallBones|1, "cube", "", vec(255,255,0)),Bones["NextTargetPos",number]=I
+    I++, HN++, HT[HN,array] = array(I, noentity(), noentity(), 0, vec(0, 0, 0), ang(0,0,0), BoneScale*ShowBones*ShowallBones, "cube", "", vec(0,255,0)),Bones["TargetPos",number]=I
+    I++, HN++, HT[HN,array] = array(I, noentity(), noentity(), 0, vec(0, 0, 0), ang(0,0,0), BoneScale*ShowBones*ShowallBones, "cube", "", vec(255,255,0)),Bones["NextTargetPos",number]=I
     
     for(I2=1,Config["TailSegmentCount",number]){
         I++, HN++, HT[HN,array] = array(I, I2==1 ? Bones["TailParent",number] : Bones["Tail_"+(I2-1),number], noentity(), 0, vec(-10, 0, 0), ang(0, 0, 0), BoneScale*ShowBones, BoneMdl),Bones["Tail_"+I2,number]=I

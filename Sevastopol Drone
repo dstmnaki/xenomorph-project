@@ -1535,7 +1535,7 @@ if(first()){
                     if((E:vel():length()>(150+(200*E:pos():distance(Base:pos())/1000)))&E:isOnGround()){
                         if(!E:inNoclip()){
                             NextT=E
-                            AiData["targetVec",vector]=NextT:pos()
+                            AiData["nextTargetVec",vector]=AiData["targetVec",vector]=NextT:pos()
                             AiData["blockMovement",number]=1
                             AiData["lookAtTarget",number]=1
                             AiData["heardPlayer",number]=1
@@ -1566,7 +1566,7 @@ if(first()){
                 if(Ent:pos():distance(holoEntity(Bones["Root",number]):pos())<4000){
                     if(!Ent:inNoclip()){
                         NextT=Ent
-                        AiData["targetVec",vector]=Ent:pos()
+                        AiData["nextTargetVec",vector]=AiData["targetVec",vector]=Ent:pos()
                         AiData["lookAtTarget",number]=1
                         AiData["heardPlayer",number]=1
                         AiData["checkNext",number]=I-1
@@ -1623,7 +1623,7 @@ if(first()){
                     if(!NextT:inNoclip()&(DistT<=2000)){
                         if(NextT:shootPos():isSeenBy(Base:pos(),holoEntity(Bones["Head",number]):forward())&!NextT:inNoclip()){
                             AiData["hasTargetBuildup",number]=AiData["hasTargetBuildup",number]+BuildUp
-                            AiData["targetVec",vector]=NextT:pos()
+                            AiData["nextTargetVec",vector]=AiData["targetVec",vector]=NextT:pos()
                             AiData["blockMovement",number]=1
                             AiData["lookAtTarget",number]=1
                             if(AiData["hasTargetBuildup",number]>0.1){

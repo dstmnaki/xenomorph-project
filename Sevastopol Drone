@@ -1838,10 +1838,16 @@ if(first()){
                 AiData["lookAtTarget",number]=0
                 AiData["hasTargetBuildup",number]=0
                 AiData["aiIsAttacking",number]=0
+                AiData["chasingTarget",number]=0
+                AiData["heardPlayer",number]=0
+                AiData["seenPlayer",number]=0
             }
         }
     }
     function void aiReachDestination(){
+        if(Base:pos():distance(AiData["targetVec",vector])>5000){
+            AiData["hasTargetVec",number]=0
+        }
         if((holoEntity(Bones["Root",number]):pos():setZ(0):distance(AiData["targetVec",vector]:setZ(0))<150)&(AiData["hasTargetVec",number]==1)){
             if(AiData["hasNextTargetVec",number]==1){
                 AiData["hasTargetVec",number]=1

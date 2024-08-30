@@ -1706,8 +1706,8 @@ if(first()){
     }
     function void aiVent(){
         if((curtime()-AiData["aiFindVentDelta",number])>0.1){
-            if(AiData["ventEntity",entity]:isValid()==0){
-                if((curtime()-Delays["findVentDelta",number])>=0.5){
+            if(VentData["state",string]=="outside"){
+                if((curtime()-Delays["findVentDelta",number])>=0.1){
                     if(AiData["hasVent",number]==0){
                         findIncludePlayerProps(owner())
                         findIncludeClass(entity():type())
@@ -1719,6 +1719,7 @@ if(first()){
                         AiData["ventEntity",entity]=findResult(1)
                         if(AiData["ventEntity",entity]:isValid()){
                             AiData["hasVent",number]=1
+                            print("i found a vent")
                         }
                     }else{
                         if((AiData["ventEntity",entity]:pos()+vec(0,0,-50)):isSeenBy(Base:pos())){
@@ -1731,7 +1732,7 @@ if(first()){
                                         AiData["investigateFaster",number]=1
                                     break
                                     default,
-                                        AiData["aiShouldVentDeltaTime",number]=15
+                                        AiData["aiShouldVentDeltaTime",number]=randint(100,200)/10
                                         AiData["hasVent",number]=0
                                     break
                                 }
@@ -1782,6 +1783,7 @@ if(first()){
                 if(AiData["aiVent",number]==1){
                     AiData["aiVentThinkTime",number]=randint(120,300)/10
                     Space=1
+                    AiData["hasTargetVec",number]=0
                 }
             }elseif(VentData["state",string]=="inside"){
                 Space=1
@@ -1877,7 +1879,7 @@ if(first()){
                     aiFindTarget()
                 }
                 aiReachDestination()
-                if(AiData["hasTarget",number]==0){
+                if((AiData["hasTarget",number]==0)&(AiData["chasingTarget",number]==0)){
                     
                     aiVent()
                     nearbyPlayerDetection()
@@ -2609,7 +2611,7 @@ if(clk("int")){
     if(changed(Space) & Space) {
         if(VentData["entity",entity]:isValid()&!OnWall){
             ventTransition()
-        }elseif(IsOnGround){
+        }elseif(IsOnGround&(AiData["enabled",number]==0)){
             Jumping=1
             HasLanded=0
             Base:propSetVelocity((EyeAng:forward()+(Base:up()*0.2))*35*25)

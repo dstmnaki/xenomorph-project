@@ -1575,6 +1575,7 @@ if(first()){
                         AiData["lookingAround",number]=0
                         AiData["isSearching",number]=0
                         AiData["investigate",number]=0
+                        AiData["investigateFaster",number]=1
                     }
                     if(VentData["state",string]=="inside"){
                         findIncludePlayerProps(owner())

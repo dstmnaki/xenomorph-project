@@ -1719,7 +1719,6 @@ if(first()){
                         AiData["ventEntity",entity]=findResult(1)
                         if(AiData["ventEntity",entity]:isValid()){
                             AiData["hasVent",number]=1
-                            print("i found a vent")
                         }
                     }else{
                         if((AiData["ventEntity",entity]:pos()+vec(0,0,-50)):isSeenBy(Base:pos())){

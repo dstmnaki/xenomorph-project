@@ -1591,11 +1591,11 @@ if(first()){
                             AiData["aiVentThinkTime",number]=(Base:pos():distance(AiData["ventEntityNearest",entity]:pos())/1000)*3
                             AiData["aiVentDelta",number]=curtime()
                             VentData["entity",entity]=AiData["ventEntityNearest",entity]
+                            rangerFilter(VentData["entity",entity])
                             Base:setPos(AiData["ventEntityNearest",entity]:pos())
                             Base:setAng(ang(0,AiData["ventEntityNearest",entity]:angles():yaw()+Anim["ventRandomRotation",number],0))
                             holoPos(Bones["Root",number],AiData["ventEntityNearest",entity]:pos())
                             holoAng(Bones["Root",number],ang(0,AiData["ventEntityNearest",entity]:angles():yaw()+Anim["ventRandomRotation",number],0))
-                            
                         }else{
                             Space=1
                             AiData["aiVentThinkTime",number]=randint(200,300)/10

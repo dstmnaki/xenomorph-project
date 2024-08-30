@@ -47,7 +47,7 @@ if(first()){
     
     Config["TailSegmentCount",number]=12
     
-    AiData["enabled",number]=1
+    AiData["enabled",number]=0
     
     CurrentStance = select(1,"upright","stalking","onAllFours")
     
@@ -2520,7 +2520,7 @@ if(clk("int")){
             GroundLevel=rangerOffset(1000,TailPoints[I,vector]:setZ(holoEntity(Bones["TailParent",number]):pos():z()),vec(0,0,-1)):pos():z()+2
             
             if(Gravity:length()>0){
-                if(I>7){
+                if(I>4){
                     if(TailPoints[I,vector]:z() < GroundLevel){
                         TailPoints[I,vector] = vec(TailPoints[I,vector]:x(),TailPoints[I,vector]:y(),GroundLevel)
                         

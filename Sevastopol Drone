@@ -1584,15 +1584,24 @@ if(first()){
                         findInSphere(Ent:pos(),4000)
                         findClipToClass(entity():type())
                         findClipToModel("models/sprops/cuboids/height36/size_1/cube_36x18x36.mdl")
-                        findSortByDistance(Base:pos())
+                        findSortByDistance(Ent:pos())
                         AiData["ventEntityNearest",entity]=findResult(1)
                         if(AiData["ventEntityNearest",entity]:isValid()){
                             AiData["ventEntity",entity]=AiData["ventEntityNearest",entity]
-                            VentData["entity",entity]=AiData["ventEntity",entity]
+                            AiData["aiVentThinkTime",number]=(Base:pos():distance(AiData["ventEntityNearest",entity]:pos())/1000)*3
+                            AiData["aiVentDelta",number]=curtime()
+                            VentData["entity",entity]=AiData["ventEntityNearest",entity]
+                            Base:setPos(AiData["ventEntityNearest",entity]:pos())
+                            Base:setAng(ang(0,AiData["ventEntityNearest",entity]:angles():yaw()+Anim["ventRandomRotation",number],0))
+                            holoPos(Bones["Root",number],AiData["ventEntityNearest",entity]:pos())
+                            holoAng(Bones["Root",number],ang(0,AiData["ventEntityNearest",entity]:angles():yaw()+Anim["ventRandomRotation",number],0))
+                            
+                        }else{
+                            Space=1
+                            AiData["aiVentThinkTime",number]=randint(200,300)/10
+                            AiData["aiVentDelta",number]=curtime()
                         }
-                        Space=1
-                        AiData["aiVentThinkTime",number]=randint(200,300)/10
-                        AiData["aiVentDelta",number]=curtime()
+                        
                     }
                 }
             }

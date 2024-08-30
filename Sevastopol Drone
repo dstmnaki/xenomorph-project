@@ -1561,7 +1561,7 @@ if(first()){
         }
     }
     function void aiHearGunshots(){
-        if(AiData["chasingTarget",number]==0){
+        if((AiData["chasingTarget",number]==0)&(AiData["heardPlayer",number]==0)){
             event bulletFired(Ent:entity, BulletData:table) {
                 if(Ent:pos():distance(holoEntity(Bones["Root",number]):pos())<4000){
                     if(!Ent:inNoclip()){
@@ -1577,6 +1577,18 @@ if(first()){
                         AiData["investigate",number]=0
                     }
                     if(VentData["state",string]=="inside"){
+                        findIncludePlayerProps(owner())
+                        findIncludeClass(entity():type())
+                        findExcludeEntity(entity())
+                        findInSphere(Ent:pos(),4000)
+                        findClipToClass(entity():type())
+                        findClipToModel("models/sprops/cuboids/height36/size_1/cube_36x18x36.mdl")
+                        findSortByDistance(Base:pos())
+                        AiData["ventEntityNearest",entity]=findResult(1)
+                        if(AiData["ventEntityNearest",entity]:isValid()){
+                            AiData["ventEntity",entity]=AiData["ventEntityNearest",entity]
+                            VentData["entity",entity]=AiData["ventEntity",entity]
+                        }
                         Space=1
                         AiData["aiVentThinkTime",number]=randint(200,300)/10
                         AiData["aiVentDelta",number]=curtime()
@@ -1780,7 +1792,7 @@ if(first()){
                     }
                 }
                 if(AiData["aiVent",number]==1){
-                    AiData["aiVentThinkTime",number]=randint(120,300)/10
+                    AiData["aiVentThinkTime",number]=randint(120,600)/10
                     Space=1
                     AiData["hasTargetVec",number]=0
                 }
